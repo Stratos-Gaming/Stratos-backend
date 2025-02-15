@@ -1,0 +1,192 @@
+[
+    {
+        "model": "userModule.project",
+        "pk": 1,
+        "fields": {
+            "name": "Project Alpha",
+            "description": "Descrizione del Project Alpha",
+            "body": "Contenuto dettagliato per Project Alpha.",
+            "author": "Alice",
+            "creationDate": "2023-01-01",
+            "startingDate": "2023-02-01",
+            "endingDate": "2023-12-31",
+            "maxFunds": "100000.00",
+            "minFunds": "5000.00",
+            "funds": "20000.00",
+            "productionTime": 12,
+            "developers": "Alice, Bob, Charlie",
+            "status": 1
+        }
+    },
+    {
+        "model": "userModule.project",
+        "pk": 2,
+        "fields": {
+            "name": "Project Beta",
+            "description": "Descrizione del Project Beta",
+            "body": "Contenuto dettagliato per Project Beta.",
+            "author": "Bob",
+            "creationDate": "2023-03-01",
+            "startingDate": "2023-04-01",
+            "endingDate": "2024-03-31",
+            "maxFunds": "150000.00",
+            "minFunds": "10000.00",
+            "funds": "50000.00",
+            "productionTime": 18,
+            "developers": "Bob, Daniel",
+            "status": 2
+        }
+    },
+    {
+        "model": "userModule.project",
+        "pk": 3,
+        "fields": {
+            "name": "Project Gamma",
+            "description": "Descrizione del Project Gamma",
+            "body": "Contenuto dettagliato per Project Gamma.",
+            "author": "Charlie",
+            "creationDate": "2023-05-15",
+            "startingDate": "2023-06-01",
+            "endingDate": "2024-06-01",
+            "maxFunds": "200000.00",
+            "minFunds": "15000.00",
+            "funds": "75000.00",
+            "productionTime": 24,
+            "developers": "Charlie, Elena, Frank",
+            "status": 3
+        }
+    },
+    {
+        "model": "userModule.project",
+        "pk": 4,
+        "fields": {
+            "name": "Project Delta",
+            "description": "Descrizione del Project Delta",
+            "body": "Contenuto dettagliato per Project Delta.",
+            "author": "Daniel",
+            "creationDate": "2023-07-01",
+            "startingDate": "2023-08-01",
+            "endingDate": "2024-07-31",
+            "maxFunds": "250000.00",
+            "minFunds": "20000.00",
+            "funds": "125000.00",
+            "productionTime": 15,
+            "developers": "Daniel, Fiona",
+            "status": 1
+        }
+    },
+    {
+        "model": "userModule.project",
+        "pk": 5,
+        "fields": {
+            "name": "Project Epsilon",
+            "description": "Descrizione del Project Epsilon",
+            "body": "Contenuto dettagliato per Project Epsilon.",
+            "author": "Elena",
+            "creationDate": "2023-09-10",
+            "startingDate": "2023-10-01",
+            "endingDate": "2024-09-30",
+            "maxFunds": "300000.00",
+            "minFunds": "25000.00",
+            "funds": "150000.00",
+            "productionTime": 20,
+            "developers": "Elena, George, Hannah",
+            "status": 2
+        }
+    },
+    {
+        "model": "userModule.project",
+        "pk": 6,
+        "fields": {
+            "name": "Project Zeta",
+            "description": "Descrizione del Project Zeta",
+            "body": "Contenuto dettagliato per Project Zeta.",
+            "author": "Frank",
+            "creationDate": "2023-11-01",
+            "startingDate": "2023-12-01",
+            "endingDate": "2024-11-30",
+            "maxFunds": "50000.00",
+            "minFunds": "10000.00",
+            "funds": "25000.00",
+            "productionTime": 6,
+            "developers": "Frank, Irene",
+            "status": 3
+        }
+    },
+    {
+        "model": "userModule.project",
+        "pk": 7,
+        "fields": {
+            "name": "Project Eta",
+            "description": "Descrizione del Project Eta",
+            "body": "Contenuto dettagliato per Project Eta.",
+            "author": "Ivan",
+            "creationDate": "2024-01-05",
+            "startingDate": "2024-02-01",
+            "endingDate": "2025-01-31",
+            "maxFunds": "120000.00",
+            "minFunds": "8000.00",
+            "funds": "60000.00",
+            "productionTime": 14,
+            "developers": "Ivan, John",
+            "status": 2
+        }
+    },
+    {
+        "model": "userModule.project",
+        "pk": 8,
+        "fields": {
+            "name": "Project Theta",
+            "description": "Descrizione del Project Theta",
+            "body": "Contenuto dettagliato per Project Theta.",
+            "author": "John",
+            "creationDate": "2024-03-10",
+            "startingDate": "2024-04-01",
+            "endingDate": "2025-03-31",
+            "maxFunds": "180000.00",
+            "minFunds": "12000.00",
+            "funds": "90000.00",
+            "productionTime": 20,
+            "developers": "John, Kevin, Lisa",
+            "status": 1
+        }
+    },
+    {
+        "model": "userModule.project",
+        "pk": 9,
+        "fields": {
+            "name": "Project Iota",
+            "description": "Descrizione del Project Iota",
+            "body": "Contenuto dettagliato per Project Iota.",
+            "author": "Kevin",
+            "creationDate": "2024-05-20",
+            "startingDate": "2024-06-01",
+            "endingDate": "2025-06-01",
+            "maxFunds": "220000.00",
+            "minFunds": "15000.00",
+            "funds": "110000.00",
+            "productionTime": 22,
+            "developers": "Kevin, Mary",
+            "status": 3
+        }
+    },
+    {
+        "model": "userModule.project",
+        "pk": 10,
+        "fields": {
+            "name": "Project Kappa",
+            "description": "Descrizione del Project Kappa",
+            "body": "Contenuto dettagliato per Project Kappa.",
+            "author": "Lisa",
+            "creationDate": "2024-07-15",
+            "startingDate": "2024-08-01",
+            "endingDate": "2025-08-31",
+            "maxFunds": "300000.00",
+            "minFunds": "20000.00",
+            "funds": "150000.00",
+            "productionTime": 25,
+            "developers": "Lisa, Nick, Olivia",
+            "status": 2
+        }
+    }
+]
