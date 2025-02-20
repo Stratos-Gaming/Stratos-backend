@@ -7,6 +7,8 @@
 # You can add other services your application may depend on here, such as a
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
+name: stratos-backend
+
 services:
   server:
     build:
@@ -14,13 +16,20 @@ services:
     ports:
       - 5371:5371
     depends_on:
-    - db
+      - db
     environment:
-          - DB_HOST=db
-          - DB_PORT=5432
-          - DB_NAME=stratosDB
-          - DB_USER=postgres
-          - DB_PASSWORD=Stratos
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=stratosDB
+      - DB_USER=postgres
+      - DB_PASSWORD=Stratos
+    develop:
+      watch:
+          - action: sync
+            path: ./backendStratos
+            target: app/backendStratos
+            ignore:
+              - node_modules/
   db:
     image: postgres:latest
     environment:
@@ -30,12 +39,12 @@ services:
     ports:
       - "5432:5432"
   pgadmin:
-      image: dpage/pgadmin4
-      environment:
-        PGADMIN_DEFAULT_EMAIL: jacopicci@gmail.com
-        PGADMIN_DEFAULT_PASSWORD: Stratos
-      ports:
-        - "5050:80"
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: jacopicci@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: Stratos
+    ports:
+      - "5050:80"
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
@@ -69,4 +78,3 @@ services:
 # secrets:
 #   db-password:
 #     file: db/password.txt
-
