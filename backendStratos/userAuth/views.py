@@ -1,3 +1,4 @@
+#File used for user authentication
 from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework.response import Response
@@ -7,11 +8,9 @@ from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from django.contrib import auth
 from django.utils.decorators import method_decorator
 from datetime import datetime
-
 @method_decorator(csrf_protect, name='dispatch')
 class CheckAuthenticatedView(APIView):
     def get(self, request, format=None):
-
         try:
             isAuthenticated = User.is_authenticated
 

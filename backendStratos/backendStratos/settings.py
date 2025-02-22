@@ -172,3 +172,12 @@ CSRF_COOKIE_HTTPONLY = False  # Permette di leggerlo da JavaScript
 CSRF_COOKIE_SECURE = False  # Metti True se usi HTTPS
 
 ACCESS_CONTROL_ALLOW_ORIGIN = 'http://localhost:5173'
+
+#EMAILS DATA
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'info@stratosgaming.it'
+EMAIL_HOST_PASSWORD = 'tkfp abpa lfau whnm'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

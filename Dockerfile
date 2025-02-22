@@ -48,4 +48,4 @@ COPY --chown=app:app . /app
 EXPOSE 5371
 
 # Run the application.
-CMD python ./backendStratos/manage.py runserver 0.0.0.0:5371
+CMD export GOOGLE_APPLICATION_CREDENTIALS="/app/backendStratos/OAUTH.json" && python ./backendStratos/manage.py runserver 0.0.0.0:5371

@@ -5,3 +5,4 @@ class ProjectSubmissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectSubmission
         fields = '__all__'
+
