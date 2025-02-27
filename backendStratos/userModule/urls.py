@@ -1,11 +1,11 @@
-from rest_framework import routers
-from userModule.views import ProjectViewSet
-from django.urls import path, include
-
-router = routers.DefaultRouter()
-router.register('projects', ProjectViewSet)
-
+from django.urls import path
+from . import views
+from .views import GetSelfInfo, UpdateSelfInfo, UpdateSelfPassword, GetSpecificUsers
+app_name = 'userModule'
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', GetSelfInfo.as_view(), name='get-self-info'),
+    path('update/', UpdateSelfInfo.as_view(), name='update-self-info'),
+    path('change-password/', UpdateSelfPassword.as_view(), name='update-self-password'),
+    path('get-user-info/', GetSpecificUsers.as_view(), name='get-specific-users'),
 ]

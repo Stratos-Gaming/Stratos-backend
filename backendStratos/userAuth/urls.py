@@ -2,7 +2,7 @@ from django.urls import path, include
 from .views import SingupView, GetCSRFToken, LoginView, LogoutView, CheckAuthenticatedView
 
 urlpatterns = [
-    path('login/', LoginView.as_view(), name='login'),
+    path('', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('authenticated/', CheckAuthenticatedView.as_view(), name='authenticated'),
     path('register/', SingupView.as_view(), name='signup'),
