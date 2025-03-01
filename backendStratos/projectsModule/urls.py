@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import ProjectSubmissionCreateView
-from .mailServer import send_notification
+from backendStratos.mailServer import send_notification
 from rest_framework import routers
 from .views import ProjectViewSet
 from django.urls import path, include
@@ -11,7 +11,6 @@ router.register('', ProjectViewSet)
 
 urlpatterns = [
     path('submit-project/', ProjectSubmissionCreateView.as_view(), name='submit-project'),
-    path('create-email/', send_notification, name='create_email'),
     path('', include(router.urls)),
 ]
 

@@ -5,9 +5,14 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 from userModule.models import StratosUser
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
-from django.contrib import auth
+from rest_framework import authentication
+from django.contrib import auth  # Add this import for login/logout functionality
 from django.utils.decorators import method_decorator
 from datetime import datetime
+from backendStratos.utilities import checkForPasswordRequirements
+from backendStratos.mailServer import send_verification_email
+from django.contrib.auth.tokens import default_token_generator
+
 @method_decorator(csrf_protect, name='dispatch')
 class CheckAuthenticatedView(APIView):
     def get(self, request, format=None):
@@ -31,19 +36,26 @@ class SingupView(APIView):
         username = data['username']
         password = data['password']
         re_password = data['re_password']
+        email = data.get('email', '')  # Get email with empty default if not provided
 
         if password == re_password:
             if User.objects.filter(username=username).exists():
                 return Response({'error': 'Username already exists'})
             else:
-                if len(password) < 8:
-                    return Response({'error': 'Password must be at least 8 characters long'})
+                if checkForPasswordRequirements(password) == False:
+                    return Response({'error': 'Password does not have all the requirements'})
                 else:
-                    user = User.objects.create_user(username=username, password=password, last_login=datetime.now())
+                    user = User.objects.create_user(
+                        username=username, 
+                        email=email,
+                        password=password, 
+                        last_login=datetime.now()
+                    )
                     user.save()
                     user = User.objects.get(id=user.id)
                     user_profile = StratosUser(user=user, phone='', address='', city='', state='', country='', zip='')
                     user_profile.save()
+                    send_verification_email(user, request)
                     return Response({'success': 'User created successfully'})
         else:
             return Response({'error': 'Passwords do not match'})
@@ -66,7 +78,9 @@ class LoginView(APIView):
                 return Response({'success': 'User authenticated', 'username': username})
             else:
                 return Response({'error': 'Error authenticating'})
-        except:
+        except Exception as e:
+            # Log the exception but don't expose details to client
+            print(f"Error retrieving user info: {str(e)}")
             return Response({'error': 'Something went wrong authenticating'})
         
 class LogoutView(APIView):
@@ -83,3 +97,17 @@ class GetCSRFToken(APIView):
 
     def get(self, request, format=None):
         return Response({'success': 'CSRF cookie set'})
+
+class VerifyEmailView(APIView):
+    def get(self, request, uid, token):
+        try:
+            user = User.objects.get(pk=uid)
+        except User.DoesNotExist:
+            return Response({'error': 'Invalid user'}, status=400)
+        
+        if default_token_generator.check_token(user, token):
+            stratos_user = StratosUser.objects.get(user=user)
+            stratos_user.verifyEmail()
+            return Response({'message': 'Email verified successfully'}, status=200)
+        else:
+            return Response({'error': 'Invalid or expired token'}, status=400)

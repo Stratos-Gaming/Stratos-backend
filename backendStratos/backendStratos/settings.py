@@ -96,8 +96,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ.get('DB_NAME', 'stratosDB'),
         'USER': os.environ.get('DB_USER', 'postgres'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'Stratos'),
-        'HOST': os.environ.get('DB_HOST', 'db'),  # Imposta 'db' come host di default
+        'PASSWORD': 'Stratos123',
+        'HOST': 'stratosdb-aws.cha6kyqe6mav.eu-central-1.rds.amazonaws.com',  # Imposta 'db' come host di default
         'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }

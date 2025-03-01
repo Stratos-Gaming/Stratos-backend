@@ -1,0 +1,7 @@
+POST http://localhost:5371/login/
+Content-Type: application/json
+
+{
+  "username": "stratostest",
+  "password": "Stratos123"
+}

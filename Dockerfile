@@ -38,11 +38,14 @@ RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=bind,source=requirements.txt,target=requirements.txt \
     python -m pip install -r requirements.txt
 
+# Copy the source code into the container.
+COPY . /app
+
+# Fix permissions for the appuser
+RUN chown -R appuser:appuser /app
+
 # Switch to the non-privileged user to run the application.
 USER appuser
-
-# Copy the source code into the container.
-COPY --chown=app:app . /app
 
 # Expose the port that the application listens on.
 EXPOSE 5371

@@ -19,6 +19,7 @@ from django.urls import path, include, re_path
 from django.views.generic import TemplateView
 from django.conf.urls.static import static
 from django.conf import settings
+from .mailServer import send_notification
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,6 +27,8 @@ urlpatterns = [
     path('user/', include('userModule.urls')),
     path('login/', include('userAuth.urls')),
     path('projects/', include('projectsModule.urls')),
+    path('create-email/', send_notification, name='create_email'),
+
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

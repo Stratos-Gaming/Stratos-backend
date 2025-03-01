@@ -16,14 +16,14 @@ services:
       context: .
     ports:
       - 5371:5371
-    depends_on:
-      - db
+    #depends_on:
+    #  - db
     environment:
-      - DB_HOST=db
+      - DB_HOST=stratosdb-aws.cha6kyqe6mav.eu-central-1.rds.amazonaws.com
       - DB_PORT=5432
       - DB_NAME=stratosDB
       - DB_USER=postgres
-      - DB_PASSWORD=Stratos
+      - DB_PASSWORD=Stratos123
     # Add a volume mount for development
     volumes:
       - ./backendStratos:/app/backendStratos
@@ -36,16 +36,16 @@ services:
           ignore:
             - node_modules/
             - __pycache__/  
-  db:
-    image: postgres:latest
-    environment:
-      POSTGRES_DB: stratosDB
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Stratos
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+  #db:
+  #  image: postgres:latest
+  #  environment:
+  #    POSTGRES_DB: stratosDB
+  #    POSTGRES_USER: postgres
+  #    POSTGRES_PASSWORD: Stratos
+  #  ports:
+  #    - "5432:5432"
+  #  volumes:
+  #    - postgres_data:/var/lib/postgresql/data
     
   pgadmin:
     image: dpage/pgadmin4
