@@ -27,7 +27,7 @@ urlpatterns = [
     path('user/', include('userModule.urls')),
     path('login/', include('userAuth.urls')),
     path('projects/', include('projectsModule.urls')),
-    path('create-email/', send_notification, name='create_email'),
+    path('/notification/create-email/', send_notification, name='create_email'),
 
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
