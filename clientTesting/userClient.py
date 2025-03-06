@@ -3,7 +3,7 @@ import json
 
 def CreateUser(session):
     url = 'http://localhost:5371/login/register/'
-    data = {'username': 'stratostest7', 'password': 'Stratos123', 're_password': 'Stratos123', 'email': 'j.piccinelli@stratosgaming.it'}
+    data = {'username': 'stratostest8', 'password': 'Stratos123', 're_password': 'Stratos123', 'email': 'j.piccinelli@stratosgaming.it'}
     # Get CSRF cookie
     session.get('http://localhost:5371/login/csrf_cookie/')
     csrftoken = session.cookies.get('csrftoken')

@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .serializers import UserSerializer
 from .models import StratosUser
+from django.contrib.auth.models import User
 from .permissions import IsStratosUserVerified
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
