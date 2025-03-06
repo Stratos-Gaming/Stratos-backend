@@ -39,6 +39,7 @@ def getSelfUserInfo(session):
     response = session.get(url, headers=headers)
     print(response.text)
     return response
+    
 def GetSpecificUserInfo(session, username):
     url = 'http://localhost:5371/user/get-user-info/'
     

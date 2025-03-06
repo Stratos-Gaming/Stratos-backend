@@ -9,7 +9,7 @@ from .permissions import IsStratosUserVerified
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 
-class GetSelfInfo(APIView): 
+class GetSelfInfo(APIView, IsStratosUserVerified): 
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
