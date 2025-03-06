@@ -53,12 +53,49 @@ def GetSpecificUserInfo(session, username):
     response = session.post(url, data=json.dumps(data), headers=headers)
     print(response.text)
     return response
+
+
+def update_user_info(session):
+    url = 'http://localhost:5371/user/update/'
+    
+    # Data to update - customize these fields as needed
+    data = {
+        'first_name': 'Pierluigi',
+        'last_name': 'Pedrazzi',
+        'email': 'pigiped@gmail.com',
+        'phone': '123-456-7890',
+        'address': 'Via Roma 123',
+        'city': 'Milano',
+        'state': 'MI',
+        'country': 'Italy',
+        'zip': '20100'
+    }
+    
+    # Get CSRF token if it exists
+    if 'csrftoken' not in session.cookies:
+        session.get('http://localhost:5371/login/csrf_cookie/')
+    
+    headers = {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': session.cookies.get('csrftoken')
+    }
+    
+    response = session.post(url, data=json.dumps(data), headers=headers)
+    print("Update User Response:", response.status_code)
+    print(response.text)
+    return response
+
+# Usage in main script:
+# session = requests.Session()
+# authenticateUser(session)
+# update_user_info(session)
+
 # Main script
 session = requests.Session()
 
 # Uncomment to create a user if needed
-CreateUser(session)
-
+authenticateUser(session)
+update_user_info(session)
 # # Authenticate
 # autenticatedResponse = authenticateUser(session)
 

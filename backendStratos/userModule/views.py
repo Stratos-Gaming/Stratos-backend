@@ -43,6 +43,9 @@ class UpdateSelfInfo(APIView):
         data = request.data
 
         try:
+            # Get the StratosUser instance associated with this User
+            stratos_user = StratosUser.objects.get(user=user)
+            
             # Validate email if provided
             if 'email' in data:
                 if not data['email']:
@@ -55,12 +58,33 @@ class UpdateSelfInfo(APIView):
             user.last_name = data.get('last_name', user.last_name)
             user.email = data.get('email', user.email)
             
-            # Save user and handle database errors
-            user.save()
+            # Update StratosUser fields if provided
+            if 'phone' in data:
+                stratos_user.phone = data.get('phone')
+            if 'address' in data:
+                stratos_user.address = data.get('address')
+            if 'city' in data:
+                stratos_user.city = data.get('city')
+            if 'state' in data:
+                stratos_user.state = data.get('state')
+            if 'country' in data:
+                stratos_user.country = data.get('country')
+            if 'zip' in data:
+                stratos_user.zip = data.get('zip')
             
-            user_info = UserSerializer(user).data
+            # Save both models
+            user.save()
+            stratos_user.save()
+            
+            # Serialize and return the StratosUser
+            user_info = UserSerializer(stratos_user).data
             return Response(user_info, status=status.HTTP_200_OK)
         
+        except StratosUser.DoesNotExist:
+            return Response(
+                {'error': 'User profile not found'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
         except Exception as e:
             print(f"Error updating user info: {str(e)}")
             return Response({'error': 'Failed to update user information'}, 
