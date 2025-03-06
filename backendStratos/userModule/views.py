@@ -36,7 +36,8 @@ class GetSelfInfo(APIView, IsStratosUserVerified):
         
 @method_decorator(csrf_protect, name='dispatch')
 class UpdateSelfInfo(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsStratosUserVerified]
 
     def post(self, request):
         user = request.user
