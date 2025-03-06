@@ -5,6 +5,9 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import UserSerializer
 from .models import StratosUser
 from .permissions import IsStratosUserVerified
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
+
 class GetSelfInfo(APIView): 
     permission_classes = [IsAuthenticated]
 
@@ -29,7 +32,8 @@ class GetSelfInfo(APIView):
                 {'error': 'Failed to retrieve user information'}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-
+        
+@method_decorator(csrf_protect, name='dispatch')
 class UpdateSelfInfo(APIView):
     permission_classes = [IsAuthenticated]
 
