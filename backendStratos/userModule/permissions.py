@@ -1,6 +1,16 @@
 from rest_framework import permissions
 
-class IsStratosUserVerified(permissions.BasePermission):
+class BasePermission_Stratos(permissions.BasePermission):
+        perms_map = {
+        'GET': ['%(app_label)s.add_%(model_name)s'],
+        'OPTIONS': [],
+        'HEAD': [],
+        'POST': ['%(app_label)s.add_%(model_name)s'],
+        'PUT': ['%(app_label)s.change_%(model_name)s'],
+        'PATCH': ['%(app_label)s.change_%(model_name)s'],
+        'DELETE': ['%(app_label)s.delete_%(model_name)s'],
+    }
+class IsStratosUserVerified(BasePermission_Stratos):
     """
     Custom permission to only allow StratosUsers to access their own resources.
     """
@@ -22,7 +32,7 @@ class IsStratosUserVerified(permissions.BasePermission):
         # This assumes your objects have a 'user' field that links to the StratosUser
         return False
 
-class IsAdminStratosUser(permissions.BasePermission):
+class IsAdminStratosUser(BasePermission_Stratos):
     """
     Custom permission to only allow admin-level StratosUsers.
     """

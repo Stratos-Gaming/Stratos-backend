@@ -8,9 +8,8 @@ from django.contrib.auth.models import User
 from .permissions import IsStratosUserVerified
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
-
-class GetSelfInfo(APIView, IsStratosUserVerified): 
-    permission_classes = [IsAuthenticated]
+from .mixins import IsUserVerifiedStratosPermissionMixin, IsUserAuthenticatedPermissionMixin
+class GetSelfInfo(APIView, IsUserAuthenticatedPermissionMixin): 
 
     def get(self, request):
         print(f"User authenticated: {request.user.is_authenticated}")
@@ -35,9 +34,7 @@ class GetSelfInfo(APIView, IsStratosUserVerified):
             )
         
 @method_decorator(csrf_protect, name='dispatch')
-class UpdateSelfInfo(APIView):
-    #permission_classes = [IsAuthenticated]
-    permission_classes = [IsStratosUserVerified]
+class UpdateSelfInfo(APIView, IsUserVerifiedStratosPermissionMixin):
 
     def post(self, request):
         user = request.user
@@ -91,9 +88,8 @@ class UpdateSelfInfo(APIView):
             return Response({'error': 'Failed to update user information'}, 
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class UpdateSelfPassword(APIView):
-    permission_classes = [IsAuthenticated]
-
+class UpdateSelfPassword(APIView, IsUserAuthenticatedPermissionMixin):
+    
     def post(self, request):
         user = request.user
         data = request.data
@@ -146,8 +142,7 @@ class UpdateSelfPassword(APIView):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class GetSpecificUsers(APIView):
-    permission_classes = [IsAuthenticated, IsStratosUserVerified]
+class GetSpecificUsers(APIView, IsUserVerifiedStratosPermissionMixin):
     def post(self, request):
         try:
             data = request.data
@@ -188,3 +183,5 @@ class GetSpecificUsers(APIView):
                 {'error': 'Failed to retrieve users'}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+

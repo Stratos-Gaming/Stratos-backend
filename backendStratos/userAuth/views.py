@@ -55,7 +55,8 @@ class SingupView(APIView):
                     user = User.objects.get(id=user.id)
                     user_profile = StratosUser(user=user, phone='', address='', city='', state='', country='', zip='')
                     user_profile.save()
-                    send_verification_email(user, request)
+                    if (email != ''):  # Send verification email if email provided
+                        send_verification_email(user, request, email)
                     return Response({'success': 'User created successfully'})
         else:
             return Response({'error': 'Passwords do not match'})

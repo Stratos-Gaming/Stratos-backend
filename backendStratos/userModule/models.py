@@ -23,4 +23,3 @@ class StratosUser(models.Model):
         self.save()
     def __str__(self):
         return self.user.username  # Access username through the related User model
-
