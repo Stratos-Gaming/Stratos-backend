@@ -35,18 +35,7 @@ services:
           target: /app/backendStratos
           ignore:
             - node_modules/
-            - __pycache__/  
-  #db:
-  #  image: postgres:latest
-  #  environment:
-  #    POSTGRES_DB: stratosDB
-  #    POSTGRES_USER: postgres
-  #    POSTGRES_PASSWORD: Stratos
-  #  ports:
-  #    - "5432:5432"
-  #  volumes:
-  #    - postgres_data:/var/lib/postgresql/data
-    
+            - __pycache__/      
   pgadmin:
     image: dpage/pgadmin4
     environment:
@@ -54,7 +43,3 @@ services:
       PGADMIN_DEFAULT_PASSWORD: Stratos
     ports:
       - "5050:80"
-
-# Define named volumes
-volumes:
-  postgres_data:

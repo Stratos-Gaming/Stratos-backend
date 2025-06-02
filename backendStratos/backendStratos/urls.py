@@ -20,15 +20,19 @@ from django.views.generic import TemplateView
 from django.conf.urls.static import static
 from django.conf import settings
 from .mailServer import send_notification
+from userAuth.views import GoogleLoginView, GoogleSignupView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('user/', include('userModule.urls')),
-    path('login/', include('userAuth.urls')),
+    path('auth/', include('userAuth.urls')),
     path('projects/', include('projectsModule.urls')),
     path('notification/create-email/', send_notification, name='create_email'),
-
+    
+    # Google Authentication endpoints
+    path('auth/google/', GoogleLoginView.as_view(), name='google-login'),
+    path('auth/google/register/', GoogleSignupView.as_view(), name='google-register'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

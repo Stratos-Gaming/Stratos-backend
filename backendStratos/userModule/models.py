@@ -12,8 +12,9 @@ class StratosUser(models.Model):
     state = models.CharField(max_length=20)
     country = models.CharField(max_length=20)
     zip = models.CharField(max_length=10)
-    # set the pk to the username
-    
+
+    google_id = models.CharField(max_length=200, null=True, blank=True)
+
     #Verification
     isEmailVerified = models.BooleanField(default=False)
     def verifyEmail(self):
