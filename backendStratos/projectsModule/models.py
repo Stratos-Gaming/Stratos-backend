@@ -77,7 +77,7 @@ class ProjectSubmission(models.Model):
     expected_release_date = models.DateField(
         null=False, 
         blank=False,
-        default=timezone.now(),
+        default=timezone.now,
         validators=[validate_future_date_one_month],
         help_text="When do you expect to release?"
     )

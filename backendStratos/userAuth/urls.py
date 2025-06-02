@@ -1,7 +1,7 @@
 from django.urls import path, include
 from .views import (
     SingupView, GetCSRFToken, LoginView, LogoutView, CheckAuthenticatedView, 
-    VerifyEmailView
+    VerifyEmailView, GoogleLoginView, GoogleSignupView
 )
 
 urlpatterns = [
@@ -11,4 +11,6 @@ urlpatterns = [
     path('register/', SingupView.as_view(), name='signup'),  # POST /login/register/
     path('csrf_cookie', GetCSRFToken.as_view(), name='csrf'),  # GET /login/csrf_cookie
     path('verify-email/<int:uid>/<str:token>/', VerifyEmailView.as_view(), name='verify-email'),
+    path('google/', GoogleLoginView.as_view(), name='google_login'),  # POST /auth/google/
+    path('google/signup/', GoogleSignupView.as_view(), name='google_signup'),  # POST /auth/google/signup/
 ]

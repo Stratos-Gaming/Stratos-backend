@@ -29,10 +29,6 @@ urlpatterns = [
     path('auth/', include('userAuth.urls')),
     path('projects/', include('projectsModule.urls')),
     path('notification/create-email/', send_notification, name='create_email'),
-    
-    # Google Authentication endpoints
-    path('auth/google/', GoogleLoginView.as_view(), name='google-login'),
-    path('auth/google/register/', GoogleSignupView.as_view(), name='google-register'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

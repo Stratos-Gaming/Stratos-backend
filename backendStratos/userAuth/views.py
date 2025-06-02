@@ -18,16 +18,42 @@ from google.auth.transport import requests
 
 @method_decorator(csrf_protect, name='dispatch')
 class CheckAuthenticatedView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    
     def get(self, request, format=None):
         try:
-            isAuthenticated = User.is_authenticated
-
-            if(isAuthenticated):
-                return Response({'isAuthenticated': 'success'})
+            # Check if user is authenticated and not anonymous
+            if request.user and request.user.is_authenticated and not request.user.is_anonymous:
+                # Get user details
+                user_data = {
+                    'isAuthenticated': True,
+                    'username': request.user.username,
+                    'email': request.user.email,
+                    'id': request.user.id
+                }
+                
+                # Check if user has StratosUser profile and if email is verified
+                try:
+                    stratos_user = StratosUser.objects.get(user=request.user)
+                    user_data['isEmailVerified'] = stratos_user.isEmailVerified
+                except StratosUser.DoesNotExist:
+                    user_data['isEmailVerified'] = False
+                
+                return Response(user_data, status=200)
             else:
-                return Response({'isAuthenticated': 'error'})
-        except:
-            return Response({'error': 'something went wrong checking authentication status'})
+                return Response({
+                    'isAuthenticated': False,
+                    'username': None,
+                    'email': None,
+                    'id': None,
+                    'isEmailVerified': False
+                }, status=200)
+        except Exception as e:
+            print(f"Error checking authentication status: {str(e)}")
+            return Response({
+                'isAuthenticated': False,
+                'error': 'Failed to check authentication status'
+            }, status=500)
 
 
 def verify_google_token(credential):
@@ -111,12 +137,20 @@ class LoginView(APIView):
             print(f"Error retrieving user info: {str(e)}")
             return Response({'error': 'Something went wrong authenticating'})
         
+@method_decorator(csrf_protect, name='dispatch')
 class LogoutView(APIView):
+    permission_classes = (permissions.AllowAny,)
     def post(self, request, format=None):
         try:
             auth.logout(request)
-            return Response({'success': 'Logged out'})
-        except:
+            response = Response({'success': 'Logged out'})
+            # Clear the session cookie
+            response.delete_cookie('sessionid')
+            # Clear the CSRF cookie
+            response.delete_cookie('csrftoken')
+            return response
+        except Exception as e:
+            print(f"Error during logout: {str(e)}")
             return Response({'error': 'Error logging out'})
 
 @method_decorator(ensure_csrf_cookie, name='dispatch')     
@@ -127,6 +161,8 @@ class GetCSRFToken(APIView):
         return Response({'success': 'CSRF cookie set'})
 
 class VerifyEmailView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    
     def get(self, request, uid, token):
         try:
             user = User.objects.get(pk=uid)
@@ -239,7 +275,8 @@ class GoogleSignupView(APIView):
                 state='', 
                 country='', 
                 zip='',
-                google_id=google_id if hasattr(StratosUser, 'google_id') else None
+                google_id=google_id if hasattr(StratosUser, 'google_id') else None,
+                isEmailVerified=True  # Set email as verified for Google users
             )
             user_profile.save()
             
