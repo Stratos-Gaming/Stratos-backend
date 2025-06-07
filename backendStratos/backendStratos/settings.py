@@ -95,7 +95,7 @@ SECRET_KEY = 'django-insecure-%5le_@gd7irhbox$kb$-ctek$)$^t2+d98_v&k)xe0sotpai&0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True  # Set to True for development
 
-ALLOWED_HOSTS = ['3.74.166.136', 'localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ['3.74.166.136', 'localhost', '127.0.0.1', '0.0.0.0', 'dev.d2lv8dn21inij8.amplifyapp.com']
 
 
 # Application definition
@@ -244,6 +244,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://3.74.166.136',
     'http://127.0.0.1:5173',
     'http://127.0.0.1:5371',
+    'https://dev.d2lv8dn21inij8.amplifyapp.com',
 ]
 
 CORS_ALLOW_METHODS = [
@@ -289,6 +290,7 @@ CSRF_TRUSTED_ORIGINS = [
     'http://3.74.166.136',
     'http://127.0.0.1:5173',
     'http://127.0.0.1:5371',
+    'https://dev.d2lv8dn21inij8.amplifyapp.com',
 ]
 
 CSRF_COOKIE_NAME = "csrftoken"
