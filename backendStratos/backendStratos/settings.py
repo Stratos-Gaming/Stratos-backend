@@ -26,9 +26,9 @@ INSTAGRAM_ACCESS_TOKEN = 'EAAXEbHvvssoBO6mEULC5OHw9d4qAKhPVC8WdiTQZBIfqCA11Wy5jl
 SECRET_KEY = 'django-insecure-%5le_@gd7irhbox$kb$-ctek$)$^t2+d98_v&k)xe0sotpai&0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['3.74.166.136', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -142,13 +142,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'build/static')
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'mediafiles')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -166,17 +166,22 @@ REST_FRAMEWORK = {
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
+    'http://3.74.166.136',
+    'http://3.74.166.136:5173',
 ]
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5173',
+    'http://3.74.166.136',
+    'http://3.74.166.136:5173',
 ]
 
-CSRF_COOKIE_NAME = "csrftoken"  # Nome del cookie CSRF
-CSRF_COOKIE_HTTPONLY = False  # Permette di leggerlo da JavaScript
-CSRF_COOKIE_SECURE = False  # Metti True se usi HTTPS
+CSRF_COOKIE_NAME = "csrftoken"
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'Lax'
 
-ACCESS_CONTROL_ALLOW_ORIGIN = 'http://localhost:5173'
+ACCESS_CONTROL_ALLOW_ORIGIN = 'http://3.74.166.136'
 
 #EMAILS DATA
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
