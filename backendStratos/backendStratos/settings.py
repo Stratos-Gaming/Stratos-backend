@@ -28,7 +28,7 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
-            'level': 'DEBUG',
+            'level': 'INFO',
         },
         'file': {
             'class': 'logging.FileHandler',
@@ -39,8 +39,8 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
+            'handlers': ['console'],
+            'level': 'INFO',
             'propagate': False,
         },
         'django.request': {
@@ -54,8 +54,8 @@ LOGGING = {
             'propagate': False,
         },
         'django.server': {
-            'handlers': ['console', 'file'],
-            'level': 'DEBUG',
+            'handlers': ['console'],
+            'level': 'INFO',
             'propagate': False,
         },
         'django.db.backends': {
@@ -95,7 +95,7 @@ SECRET_KEY = 'django-insecure-%5le_@gd7irhbox$kb$-ctek$)$^t2+d98_v&k)xe0sotpai&0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True  # Set to True for development
 
-ALLOWED_HOSTS = ['*']  # Temporarily allow all hosts for debugging
+ALLOWED_HOSTS = ['3.74.166.136', 'localhost', '127.0.0.1', '0.0.0.0']
 
 
 # Application definition
@@ -129,23 +129,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'backendStratos.middleware.CSPMiddleware',
 ]
-
-# Add this to see the raw request data
-def log_request_middleware(get_response):
-    def middleware(request):
-        logger = logging.getLogger('django.request')
-        logger.debug(f"=== Incoming Request ===")
-        logger.debug(f"Method: {request.method}")
-        logger.debug(f"Path: {request.path}")
-        logger.debug(f"Headers: {dict(request.headers)}")
-        logger.debug(f"GET params: {request.GET}")
-        logger.debug(f"POST data: {request.POST}")
-        logger.debug(f"Body: {request.body}")
-        logger.debug(f"=== End Request ===")
-        return get_response(request)
-    return middleware
-
-MIDDLEWARE.insert(0, 'backendStratos.settings.log_request_middleware')
 
 ROOT_URLCONF = 'backendStratos.urls'
 
