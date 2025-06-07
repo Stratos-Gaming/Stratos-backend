@@ -164,42 +164,47 @@ REST_FRAMEWORK = {
     ],
 }
 
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = True  # Temporarily allow all origins for testing
+CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://3.74.166.136',
     'http://3.74.166.136:5173',
+    'http://localhost:3000',  # Adding common development ports
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:3000',
 ]
-CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
+    '*',  # Allow all methods temporarily
 ]
+
 CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
+    '*',  # Allow all headers temporarily
 ]
-CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
+
+CORS_EXPOSE_HEADERS = ['*']  # Expose all headers temporarily
+
+# Additional CORS settings
+CORS_REPLACE_HTTPS_REFERER = True
+CORS_URLS_REGEX = r'^/.*$'  # Allow CORS for all URLs
+
+# CSRF settings
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5173',
     'http://3.74.166.136',
     'http://3.74.166.136:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:3000',
 ]
 
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = False  # Temporarily set to False for testing
+CSRF_COOKIE_SAMESITE = None  # Temporarily set to None for testing
 
 #EMAILS DATA
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
