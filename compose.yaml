@@ -15,7 +15,7 @@ services:
     build:
       context: .
     ports:
-      - 5371:5371
+      - 5371:8000
     #depends_on:
     #  - db
     environment:
