@@ -238,13 +238,7 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
-    'http://localhost:5371',
-    'http://3.74.166.136:5371',
-    'http://3.74.166.136',
-    'http://127.0.0.1:5173',
-    'http://127.0.0.1:5371',
-    'https://dev.d2lv8dn21inij8.amplifyapp.com',
+    '*'
 ]
 
 CORS_ALLOW_METHODS = [
@@ -284,13 +278,7 @@ CORS_URLS_REGEX = r'^/.*$'
 
 # CSRF settings
 CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:5173',
-    'http://localhost:5371',
-    'http://3.74.166.136:5371',
-    'http://3.74.166.136',
-    'http://127.0.0.1:5173',
-    'http://127.0.0.1:5371',
-    'https://dev.d2lv8dn21inij8.amplifyapp.com',
+    '*'
 ]
 
 CSRF_COOKIE_NAME = "csrftoken"
