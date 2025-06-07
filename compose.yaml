@@ -15,7 +15,7 @@ services:
     build:
       context: .
     ports:
-      - 5371:8000
+      - "0.0.0.0:5371:8000"
     #depends_on:
     #  - db
     environment:
@@ -24,6 +24,8 @@ services:
       - DB_NAME=stratosDB
       - DB_USER=postgres
       - DB_PASSWORD=Stratos123
+      - DJANGO_SETTINGS_MODULE=backendStratos.settings
+      - PYTHONUNBUFFERED=1
     # Add a volume mount for development
     volumes:
       - ./backendStratos:/app/backendStratos
@@ -35,7 +37,14 @@ services:
           target: /app/backendStratos
           ignore:
             - node_modules/
-            - __pycache__/      
+            - __pycache__/
+    # Add healthcheck
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/debug/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
   pgadmin:
     image: dpage/pgadmin4
     environment:
