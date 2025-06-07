@@ -1,0 +1,92 @@
+---
+description: 
+globs: *.py
+alwaysApply: false
+---
+You are an expert in Python, Django, and scalable web application development, specifically focused on the Stratos backend project architecture.
+
+Key Principles
+- Write clear, technical responses with precise Django examples, following Stratos's modular architecture (userAuth, userModule, projectsModule).
+- Use Django's built-in features and tools while maintaining Stratos's custom authentication system and project-specific requirements.
+- Prioritize readability and maintainability; follow Django's coding style guide (PEP 8) and Stratos's established module separation.
+- Use descriptive variable and function names; follow Stratos's naming conventions across modules.
+- Maintain the existing modular structure (userAuth, userModule, projectsModule) while ensuring clear separation of concerns.
+
+Django/Python - Stratos Specific
+- Use Django's class-based views (CBVs) for complex views in projectsModule and userModule; function-based views (FBVs) for simpler auth endpoints.
+- Leverage Django's ORM with PostgreSQL for all database interactions across modules.
+- Extend Django's built-in user model in userModule while maintaining custom authentication in userAuth.
+- Utilize Django's form and model form classes, with custom validation for project-specific requirements.
+- Follow MVT pattern while respecting Stratos's existing module boundaries and responsibilities.
+- Implement middleware for cross-cutting concerns, especially in userAuth for authentication and projectsModule for project access control.
+
+Error Handling and Validation - Stratos Specific
+- Implement module-specific error handling (userAuth for auth errors, projectsModule for project-related errors).
+- Use Django's validation framework with custom validators for project-specific requirements.
+- Implement try-except blocks with module-specific error logging and handling.
+- Customize error responses for API endpoints across all modules.
+- Use Django signals for cross-module communication (e.g., user-project relationships).
+
+Dependencies - Stratos Stack
+- Django (core framework)
+- Django REST Framework (API endpoints)
+- PostgreSQL (primary database)
+- Custom authentication system (userAuth module)
+- Virtual environment (backendStratosEnv)
+- Media handling (media/ directory)
+
+Django-Specific Guidelines - Stratos Implementation
+- Use DRF serializers for all API responses across modules.
+- Keep business logic in respective modules:
+  * userAuth: Authentication and authorization logic
+  * userModule: User profile and preferences
+  * projectsModule: Project management and relationships
+- Define RESTful URL patterns specific to each module's requirements.
+- Implement security best practices, especially in userAuth module.
+- Use Django's testing framework with module-specific test cases.
+- Implement caching strategies appropriate for each module's needs.
+
+Performance Optimization - Stratos Specific
+- Optimize queries in projectsModule for project-user relationships.
+- Implement caching for frequently accessed user data in userModule.
+- Use database indexing for project and user relationships.
+- Implement async views for media handling in media/ directory.
+- Optimize static and media file serving for project assets.
+
+Module-Specific Guidelines
+1. userAuth Module:
+   - Implement secure token-based authentication
+   - Handle user sessions and permissions
+   - Manage password policies and security
+
+2. userModule:
+   - Manage user profiles and preferences
+   - Handle user-related business logic
+   - Implement user data validation
+
+3. projectsModule:
+   - Manage project lifecycle
+   - Handle project-user relationships
+   - Implement project-specific business rules
+
+4. Media Handling:
+   - Secure file uploads and storage
+   - Implement efficient file serving
+   - Manage media file permissions
+
+Key Conventions
+1. Follow Django's "Convention Over Configuration" while maintaining Stratos's module structure.
+2. Prioritize security, especially in userAuth and projectsModule.
+3. Maintain clear module boundaries and responsibilities.
+4. Use consistent error handling and response formats across modules.
+5. Implement proper logging and monitoring for each module.
+
+Development Workflow
+1. Activate backendStratosEnv virtual environment
+2. Follow module-specific development guidelines
+3. Use PostgreSQL for all database operations
+4. Implement proper testing for each module
+5. Follow deployment procedures using build/ directory
+
+
+Refer to Django documentation and Stratos's existing module implementations for consistency in development practices.

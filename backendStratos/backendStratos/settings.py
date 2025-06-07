@@ -16,6 +16,8 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Instagram API Configuration
+INSTAGRAM_ACCESS_TOKEN = 'EAAXEbHvvssoBO6mEULC5OHw9d4qAKhPVC8WdiTQZBIfqCA11Wy5jlXGimUKKSZARilT2chSYNj3fZAsBKOLIfCBcqHqtwnZBu0GJQzsQS5baATc8aG5q8NtMuS9wWalbEqPIZBfDyaObtxV59uk28vZAJbIarrzd02I52vdUMXoeRj8tRMX1vktrFZABEKoko70wr9yspNZAdYmMZABkns3Js6JT8zz4ZD'  # Replace with your actual access token
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -44,6 +46,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'userAuth',
     'projectsModule',
+    'Mailing',
+    'Apis',
 ]
 
 
@@ -182,3 +186,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'info@stratosgaming.it'
 EMAIL_HOST_PASSWORD = 'tkfp abpa lfau whnm'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# OAuth Settings
+GOOGLE_OAUTH_CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID', '')

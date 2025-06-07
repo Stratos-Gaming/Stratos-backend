@@ -15,6 +15,15 @@ from backendStratos.mailServer import send_verification_email
 from django.contrib.auth.tokens import default_token_generator
 from google.oauth2 import id_token
 from google.auth.transport import requests
+import urllib.parse
+import urllib.request
+import json
+import logging
+import gzip
+import io
+
+# Set up logging
+logger = logging.getLogger(__name__)
 
 @method_decorator(csrf_protect, name='dispatch')
 class CheckAuthenticatedView(APIView):
@@ -22,38 +31,52 @@ class CheckAuthenticatedView(APIView):
     
     def get(self, request, format=None):
         try:
-            # Check if user is authenticated and not anonymous
-            if request.user and request.user.is_authenticated and not request.user.is_anonymous:
-                # Get user details
-                user_data = {
+            isAuthenticated = request.user.is_authenticated
+
+            if(isAuthenticated):
+                # Get additional user information
+                user = request.user
+                stratos_user = None
+                
+                try:
+                    stratos_user = StratosUser.objects.get(user=user)
+                except StratosUser.DoesNotExist:
+                    pass
+                
+                response_data = {
                     'isAuthenticated': True,
-                    'username': request.user.username,
-                    'email': request.user.email,
-                    'id': request.user.id
+                    'username': user.username,
+                    'email': user.email,
+                    'id': user.id,
+                    'isEmailVerified': stratos_user.isEmailVerified if stratos_user else False,
+                    'google_id': stratos_user.google_id if stratos_user and stratos_user.google_id else None,
+                    'discord_id': stratos_user.discord_id if stratos_user and stratos_user.discord_id else None
                 }
                 
-                # Check if user has StratosUser profile and if email is verified
-                try:
-                    stratos_user = StratosUser.objects.get(user=request.user)
-                    user_data['isEmailVerified'] = stratos_user.isEmailVerified
-                except StratosUser.DoesNotExist:
-                    user_data['isEmailVerified'] = False
+                # Add Discord profile information if available
+                if stratos_user and stratos_user.discord_id:
+                    response_data['discord_profile'] = {
+                        'username': stratos_user.discord_username,
+                        'global_name': stratos_user.discord_global_name,
+                        'avatar_url': stratos_user.get_discord_avatar_url(),
+                        'display_name': stratos_user.get_display_name()
+                    }
                 
-                return Response(user_data, status=200)
+                return Response(response_data)
             else:
                 return Response({
                     'isAuthenticated': False,
                     'username': None,
                     'email': None,
                     'id': None,
-                    'isEmailVerified': False
-                }, status=200)
+                    'isEmailVerified': False,
+                    'google_id': None,
+                    'discord_id': None,
+                    'discord_profile': None
+                })
         except Exception as e:
-            print(f"Error checking authentication status: {str(e)}")
-            return Response({
-                'isAuthenticated': False,
-                'error': 'Failed to check authentication status'
-            }, status=500)
+            logger.error(f"Error checking authentication: {str(e)}")
+            return Response({'error': 'something went wrong checking authentication status'})
 
 
 def verify_google_token(credential):
@@ -75,8 +98,120 @@ def verify_google_token(credential):
             'name': name,
             'google_id': google_id
         }
-    except ValueError:
-        # Invalid token
+    except ValueError as e:
+        logger.error(f"Google token verification failed: {str(e)}")
+        return None
+
+def verify_discord_token(access_token):
+    """Verify Discord access token and get user info"""
+    try:
+        # Log the token length (not the actual token for security)
+        logger.info(f"Attempting to verify Discord token of length: {len(access_token) if access_token else 0}")
+        
+        if not access_token:
+            logger.error("Discord token is empty or None")
+            return None
+            
+        # Get user info from Discord API with all required headers
+        headers = {
+            'Authorization': f'Bearer {access_token.strip()}',  # Ensure no whitespace
+            'Content-Type': 'application/json',
+            'User-Agent': 'Stratos/1.0 (https://stratosgaming.it, v1.0)',
+            'Accept': 'application/json',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Origin': 'https://discord.com',
+            'Connection': 'keep-alive',
+            'Sec-Fetch-Dest': 'empty',
+            'Sec-Fetch-Mode': 'cors',
+            'Sec-Fetch-Site': 'same-origin'
+        }
+        
+        # Log the request details (without sensitive data)
+        logger.info("Making request to Discord API with headers: %s", 
+                   {k: v if k != 'Authorization' else 'Bearer [REDACTED]' for k, v in headers.items()})
+        
+        # Create a custom opener with a timeout
+        opener = urllib.request.build_opener()
+        opener.addheaders = [(k, v) for k, v in headers.items()]
+        
+        try:
+            # Use the opener to make the request
+            with opener.open('https://discord.com/api/v10/users/@me', timeout=10) as response:
+                if response.status == 200:
+                    # Read the response content
+                    content = response.read()
+                    
+                    # Check if the response is gzip compressed
+                    if response.headers.get('Content-Encoding') == 'gzip':
+                        try:
+                            # Decompress the gzip content
+                            content = gzip.decompress(content)
+                        except Exception as e:
+                            logger.error(f"Error decompressing gzip content: {str(e)}")
+                            return None
+                    
+                    try:
+                        # Decode and parse the JSON
+                        user_data = json.loads(content.decode('utf-8'))
+                    except UnicodeDecodeError as e:
+                        logger.error(f"Error decoding response content: {str(e)}")
+                        return None
+                    except json.JSONDecodeError as e:
+                        logger.error(f"Error parsing JSON response: {str(e)}")
+                        return None
+                    
+                    # Extract user information
+                    discord_id = user_data['id']
+                    username = user_data['username']
+                    global_name = user_data.get('global_name', username)
+                    discriminator = user_data.get('discriminator', '0000')
+                    avatar = user_data.get('avatar', '')
+                    email = user_data.get('email', None)
+                    
+                    logger.info(f"Discord token verified successfully for user: {username}")
+                    
+                    return {
+                        'discord_id': discord_id,
+                        'username': username,
+                        'global_name': global_name,
+                        'discriminator': discriminator,
+                        'avatar': avatar,
+                        'email': email
+                    }
+                else:
+                    try:
+                        content = response.read()
+                        if response.headers.get('Content-Encoding') == 'gzip':
+                            content = gzip.decompress(content)
+                        response_body = content.decode('utf-8')
+                    except Exception as e:
+                        response_body = f"Error reading response body: {str(e)}"
+                    logger.error(f"Discord API returned status {response.status}: {response_body}")
+                    return None
+                    
+        except urllib.error.HTTPError as e:
+            try:
+                content = e.read()
+                if e.headers.get('Content-Encoding') == 'gzip':
+                    content = gzip.decompress(content)
+                response_body = content.decode('utf-8')
+            except Exception as read_error:
+                response_body = f"Error reading error response: {str(read_error)}"
+            
+            logger.error(f"Discord API HTTP Error {e.code}: {response_body}")
+            if e.code == 403:
+                if 'error code: 1010' in response_body:
+                    logger.error("Discord API returned 403 with error code 1010. This indicates a request was blocked by Discord's security measures. Please check your IP address and request headers.")
+                else:
+                    logger.error("Discord API returned 403 Forbidden. This usually means the token is invalid or expired.")
+            return None
+        except urllib.error.URLError as e:
+            logger.error(f"Discord API URL Error: {str(e)}")
+            return None
+                
+    except Exception as e:
+        logger.error(f"Error verifying Discord token: {str(e)}", exc_info=True)
         return None
 
 @method_decorator(csrf_protect, name='dispatch')
@@ -194,10 +329,26 @@ class GoogleLoginView(APIView):
             return Response({'error': 'Invalid Google token'}, status=400)
         
         email = google_user_info['email']
+        google_id = google_user_info['google_id']
         
         try:
             # Check if user exists with this email
             user = User.objects.get(email=email)
+            
+            # Get or create StratosUser profile
+            stratos_user, created = StratosUser.objects.get_or_create(user=user)
+            
+            # Link Google account if not already linked
+            if not stratos_user.google_id:
+                stratos_user.google_id = google_id
+                logger.info(f"Linked Google account to existing user: {user.username}")
+            
+            # Mark email as verified (since Google verified it)
+            if not stratos_user.isEmailVerified:
+                stratos_user.isEmailVerified = True
+                logger.info(f"Marked email as verified for user: {user.username}")
+            
+            stratos_user.save()
             
             # Log the user in
             auth.login(request, user)
@@ -214,7 +365,7 @@ class GoogleLoginView(APIView):
             }, status=404)
         
         except Exception as e:
-            print(f"Error during Google login: {str(e)}")
+            logger.error(f"Error during Google login: {str(e)}")
             return Response({'error': 'Something went wrong during Google authentication'}, status=500)
 
 @method_decorator(csrf_protect, name='dispatch')
@@ -292,3 +443,301 @@ class GoogleSignupView(APIView):
         except Exception as e:
             print(f"Error during Google signup: {str(e)}")
             return Response({'error': 'Something went wrong during Google signup'}, status=500)
+
+@method_decorator(csrf_protect, name='dispatch')
+class DiscordLoginView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    
+    def post(self, request, format=None):
+        logger.info("Discord login attempt")
+        data = self.request.data
+        access_token = data.get('access_token')
+        
+        if not access_token:
+            logger.warning("Discord login attempted without access token")
+            return Response({'error': 'Discord access token required'}, status=400)
+        
+        # Verify the Discord token and get user info
+        discord_user_info = verify_discord_token(access_token)
+        
+        if not discord_user_info:
+            logger.warning("Discord login failed: Invalid token")
+            return Response({'error': 'Invalid Discord token'}, status=400)
+        
+        discord_id = discord_user_info['discord_id']
+        email = discord_user_info['email']
+        
+        try:
+            # Try to find user by Discord ID first (if we have stored it)
+            try:
+                stratos_user = StratosUser.objects.get(discord_id=discord_id)
+                user = stratos_user.user
+                
+                # Update Discord profile info if it has changed
+                discord_username = discord_user_info['username']
+                global_name = discord_user_info['global_name']
+                avatar = discord_user_info['avatar']
+                discriminator = discord_user_info['discriminator']
+                
+                # Update Discord profile information
+                stratos_user.discord_username = discord_username
+                stratos_user.discord_global_name = global_name
+                stratos_user.discord_avatar = avatar
+                stratos_user.discord_discriminator = discriminator
+                stratos_user.save()
+                
+                logger.info(f"Discord login successful for user: {user.username}")
+                
+            except StratosUser.DoesNotExist:
+                # Try to find user by email if Discord provided one
+                if email:
+                    try:
+                        user = User.objects.get(email=email)
+                        logger.info(f"Found user by email for Discord login: {user.username}")
+                    except User.DoesNotExist:
+                        logger.warning(f"Discord login failed: No account found with email {email}")
+                        # Return Discord user info for registration pre-fill
+                        return Response({
+                            'error': 'No account found with this Discord account. Please sign up first.',
+                            'discord_user_info': {
+                                'discord_id': discord_id,
+                                'username': discord_user_info['username'],
+                                'global_name': discord_user_info['global_name'],
+                                'email': email,
+                                'avatar': discord_user_info['avatar'],
+                                'suggested_username': discord_user_info['username'].lower()
+                            }
+                        }, status=404)
+                else:
+                    logger.warning("Discord login failed: No Discord ID or email found")
+                    # Return Discord user info for registration pre-fill (without email)
+                    return Response({
+                        'error': 'No account found with this Discord account. Please sign up first.',
+                        'discord_user_info': {
+                            'discord_id': discord_id,
+                            'username': discord_user_info['username'],
+                            'global_name': discord_user_info['global_name'],
+                            'email': None,
+                            'avatar': discord_user_info['avatar'],
+                            'suggested_username': discord_user_info['username'].lower()
+                        }
+                    }, status=404)
+            
+            # Log the user in
+            auth.login(request, user)
+            
+            # Get updated stratos_user for response
+            stratos_user = StratosUser.objects.get(user=user)
+            
+            return Response({
+                'success': 'User authenticated with Discord',
+                'username': user.username,
+                'email': user.email,
+                'discord_profile': {
+                    'username': discord_user_info['username'],
+                    'global_name': discord_user_info['global_name'],
+                    'avatar_url': stratos_user.get_discord_avatar_url(),
+                    'display_name': stratos_user.get_display_name()
+                }
+            })
+            
+        except Exception as e:
+            logger.error(f"Error during Discord login: {str(e)}")
+            return Response({'error': 'Something went wrong during Discord authentication'}, status=500)
+
+@method_decorator(csrf_protect, name='dispatch')
+class DiscordLinkView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    
+    def post(self, request, format=None):
+        """Link Discord account to existing authenticated user"""
+        logger.info(f"Discord link attempt for user: {request.user.username}")
+        data = self.request.data
+        access_token = data.get('access_token')
+        
+        if not access_token:
+            logger.warning("Discord link attempted without access token")
+            return Response({'error': 'Discord access token required'}, status=400)
+        
+        # Verify the Discord token and get user info
+        discord_user_info = verify_discord_token(access_token)
+        
+        if not discord_user_info:
+            logger.warning("Discord link failed: Invalid token")
+            return Response({'error': 'Invalid Discord token'}, status=400)
+        
+        discord_id = discord_user_info['discord_id']
+        
+        try:
+            # Check if Discord account is already linked to another user
+            existing_link = StratosUser.objects.filter(discord_id=discord_id).exclude(user=request.user).first()
+            if existing_link:
+                logger.warning(f"Discord link failed: Discord ID {discord_id} already linked to another user")
+                return Response({'error': 'Discord account is already linked to another user'}, status=400)
+            
+            # Get or create StratosUser for current user
+            stratos_user, created = StratosUser.objects.get_or_create(user=request.user)
+            
+            # Update Discord profile information
+            stratos_user.discord_id = discord_id
+            stratos_user.discord_username = discord_user_info['username']
+            stratos_user.discord_global_name = discord_user_info['global_name']
+            stratos_user.discord_avatar = discord_user_info['avatar']
+            stratos_user.discord_discriminator = discord_user_info['discriminator']
+            stratos_user.save()
+            
+            logger.info(f"Discord account successfully linked for user: {request.user.username}")
+            
+            return Response({
+                'success': 'Discord account linked successfully',
+                'discord_profile': {
+                    'username': discord_user_info['username'],
+                    'global_name': discord_user_info['global_name'],
+                    'avatar_url': stratos_user.get_discord_avatar_url(),
+                    'display_name': stratos_user.get_display_name()
+                }
+            })
+            
+        except Exception as e:
+            logger.error(f"Error during Discord link: {str(e)}")
+            return Response({'error': 'Something went wrong while linking Discord account'}, status=500)
+
+@method_decorator(csrf_protect, name='dispatch')
+class DiscordUnlinkView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    
+    def post(self, request, format=None):
+        """Unlink Discord account from authenticated user"""
+        logger.info(f"Discord unlink attempt for user: {request.user.username}")
+        
+        try:
+            stratos_user = StratosUser.objects.get(user=request.user)
+            
+            if not stratos_user.discord_id:
+                return Response({'error': 'No Discord account linked'}, status=400)
+            
+            # Clear Discord information
+            stratos_user.discord_id = None
+            stratos_user.discord_username = None
+            stratos_user.discord_global_name = None
+            stratos_user.discord_avatar = None
+            stratos_user.discord_discriminator = None
+            stratos_user.save()
+            
+            logger.info(f"Discord account successfully unlinked for user: {request.user.username}")
+            
+            return Response({'success': 'Discord account unlinked successfully'})
+            
+        except StratosUser.DoesNotExist:
+            return Response({'error': 'User profile not found'}, status=404)
+        except Exception as e:
+            logger.error(f"Error during Discord unlink: {str(e)}")
+            return Response({'error': 'Something went wrong while unlinking Discord account'}, status=500)
+
+@method_decorator(csrf_protect, name='dispatch')
+class DiscordSignupView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    
+    def post(self, request, format=None):
+        logger.info("Discord signup attempt")
+        data = self.request.data
+        access_token = data.get('access_token')
+        provided_username = data.get('username')  # Get username from frontend
+        provided_email = data.get('email')  # Get email from frontend
+        
+        if not access_token:
+            logger.warning("Discord signup attempted without access token")
+            return Response({'error': 'Discord access token required'}, status=400)
+        
+        # Verify the Discord token and get user info
+        discord_user_info = verify_discord_token(access_token)
+        
+        if not discord_user_info:
+            logger.warning("Discord signup failed: Invalid token")
+            return Response({'error': 'Invalid Discord token'}, status=400)
+        
+        discord_id = discord_user_info['discord_id']
+        discord_username = discord_user_info['username']
+        global_name = discord_user_info['global_name']
+        discord_email = discord_user_info['email']
+        avatar = discord_user_info['avatar']
+        discriminator = discord_user_info['discriminator']
+        
+        try:
+            # Use provided email or Discord email
+            email = provided_email or discord_email
+            
+            if not email:
+                logger.warning(f"Discord signup failed: No email for user {discord_username}")
+                return Response({'error': 'Email is required for registration'}, status=400)
+            
+            # Check if user already exists
+            if User.objects.filter(email=email).exists():
+                logger.warning(f"Discord signup failed: Email {email} already exists")
+                return Response({'error': 'User with this email already exists'}, status=400)
+            
+            # Check if Discord account is already linked
+            if StratosUser.objects.filter(discord_id=discord_id).exists():
+                logger.warning(f"Discord signup failed: Discord ID {discord_id} already linked")
+                return Response({'error': 'Discord account is already linked to another user'}, status=400)
+            
+            # Use provided username or generate one from Discord username
+            if provided_username and not User.objects.filter(username=provided_username).exists():
+                username = provided_username
+            else:
+                # Create username from Discord username and make it unique
+                base_username = discord_username.lower()
+                username = base_username
+                counter = 1
+                while User.objects.filter(username=username).exists():
+                    username = f"{base_username}{counter}"
+                    counter += 1
+            
+            # Create the user
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                first_name=global_name.split()[0] if global_name and global_name.split() else discord_username,
+                last_name=' '.join(global_name.split()[1:]) if global_name and len(global_name.split()) > 1 else '',
+                last_login=timezone.now()
+            )
+            user.save()
+            
+            # Create the StratosUser profile with Discord info
+            user_profile = StratosUser(
+                user=user, 
+                phone='', 
+                address='', 
+                city='', 
+                state='', 
+                country='', 
+                zip='',
+                discord_id=discord_id,
+                discord_username=discord_username,
+                discord_global_name=global_name,
+                discord_avatar=avatar,
+                discord_discriminator=discriminator,
+                isEmailVerified=True if discord_email else False  # Set as verified if Discord provided email
+            )
+            user_profile.save()
+            
+            # Log the user in
+            auth.login(request, user)
+            
+            logger.info(f"Discord signup successful for user: {username}")
+            
+            return Response({
+                'success': 'User created and authenticated with Discord',
+                'username': username,
+                'email': email,
+                'discord_profile': {
+                    'username': discord_username,
+                    'global_name': global_name,
+                    'avatar_url': user_profile.get_discord_avatar_url(),
+                    'display_name': user_profile.get_display_name()
+                }
+            })
+            
+        except Exception as e:
+            logger.error(f"Error during Discord signup: {str(e)}")
+            return Response({'error': 'Something went wrong during Discord signup'}, status=500)

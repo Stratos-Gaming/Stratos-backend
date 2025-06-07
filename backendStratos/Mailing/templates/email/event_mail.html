@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Stratos Investors Meetup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* FONT DECLARATION */
+    @font-face {
+      font-family: 'Mazzard Soft';
+      src: url('https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/mazzard-soft-h-medium.otf') format('opentype');
+      font-weight: 500;
+      font-style: normal;
+    }
+
+    @font-face {
+      font-family: 'Mazzard Soft';
+      src: url('https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/mazzard-soft-h-light.otf') format('opentype');
+      font-weight: 300;
+      font-style: normal;
+    }
+
+    /* CLIENT-SPECIFIC STYLES */
+    body,
+    table,
+    td,
+    a {
+      -webkit-text-size-adjust: 100%;
+      -ms-text-size-adjust: 100%;
+      font-family: 'Mazzard Soft', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-weight: 300;
+      /* Light as default */
+    }
+
+    table,
+    td {
+      mso-table-lspace: 0pt;
+      mso-table-rspace: 0pt;
+    }
+
+    img {
+      -ms-interpolation-mode: bicubic;
+      border: 0;
+      height: auto;
+      line-height: 100%;
+      outline: none;
+      text-decoration: none;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100% !important;
+      background-color: #f4f4f4;
+      color: #f4f4f4;
+    }
+
+    /* MOBILE STYLES */
+    @media screen and (max-width:600px) {
+      .container {
+        width: 100% !important;
+      }
+
+      .stack-column,
+      .stack-column-center {
+        display: block !important;
+        width: 100% !important;
+      }
+
+      .stack-column-center {
+        text-align: center !important;
+      }
+
+      .padding {
+        padding: 20px !important;
+      }
+    }
+
+    /* Responsive background for Description & Details and More Info + Rocket */
+    .rocket-bg {
+      background-image: url('https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Mail_Rocket_Large.png');
+    }
+
+    @media screen and (max-width: 900px) {
+      .rocket-bg {
+        background-image: url('https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Mail_Rocket_Medium.png');
+      }
+    }
+
+    @media screen and (max-width: 600px) {
+      .rocket-bg {
+        background-image: none;
+      }
+    }
+
+    .info-paragraph {
+      margin-right: 40%;
+      margin-left: 30px;
+
+    }
+
+    @media screen and (max-width: 600px) {
+      .info-paragraph {
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+      }
+    }
+
+    .coloredText {
+      background-color: #1a1c2a00 !important;
+      color: #ffffff !important;
+    }
+
+    @media screen and (max-width: 600px) {
+      .coloredText {
+        background-color: #ffffff !important;
+        color: #333333 !important;
+        background-image: none !important;
+      }
+    }
+
+    .icons {
+      background-color: transparent;
+      padding: 0;
+      padding-top: 14px;
+      display: inline-block;
+      margin: 0 auto;
+      max-width: 40px;
+      max-height: 40px;
+      width: auto;
+      height: auto;
+      aspect-ratio: 1/1;
+    }
+
+    .icon-circle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      background: transparent;
+      border-radius: 50%;
+      margin: 0 auto;
+      text-align: center;
+      vertical-align: middle;
+      line-height: normal;
+    }
+
+    .icon-cell {
+      width: 80px;
+      height: 80px;
+      vertical-align: middle;
+      padding: 16px;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    @media screen and (max-width: 600px) {
+      .icon-circle {
+        background-color: #1B74E4 !important;
+        width: 56px !important;
+        height: 56px !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+        line-height: normal !important;
+      }
+      .icons {
+        max-width: 32px !important;
+        max-height: 32px !important;
+        display: inline-block !important;
+      }
+      .icon-cell {
+        width: 56px !important;
+        height: 56px !important;
+        padding: 0 16px 0 0 !important;
+        vertical-align: middle !important;
+        text-align: center !important;
+      }
+    }
+
+    .hero-desktop { display: block; }
+    .hero-tablet, .hero-mobile { display: none; }
+    @media screen and (max-width: 900px) {
+      .hero-desktop { display: none !important; }
+      .hero-tablet { display: block !important; }
+    }
+    @media screen and (max-width: 600px) {
+      .hero-tablet { display: none !important; }
+      .hero-mobile { display: block !important; }
+    }
+    .navbar-bg {
+      background-color: #ffffff;
+    }
+    @media screen and (max-width: 600px) {
+      .navbar-bg {
+        background-color: #1A1C2A;
+      }
+    }
+    .hide-on-mobile {
+      display: block !important;
+    }
+    @media screen and (max-width: 600px) {
+      .hide-on-mobile {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body
+  style="background-color:#f4f4f4; margin:0; padding:0; font-family:'Mazzard Soft', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-weight: 300; background: #ffffff !important;">
+  <!-- CENTERING TABLE -->
+  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+      <td align="center">
+
+        <!-- MAIN CONTAINER -->
+        <table border="0" cellpadding="0" cellspacing="0" class="container" style="max-width:1000px; min-width: 400px;">
+
+          <!-- HEADER -->
+          <tr>
+            <td class="navbar-bg" style="padding:20px;">
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td align="left" valign="middle" class="stack-column">
+                    <a href="https://stratosgaming.it" target="_blank" style="text-decoration:none;">
+                      <img src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/logo.png"
+                        alt="Stratos Logo" width="240" style="display:block; border:0;" />
+                    </a>
+                  </td>
+                  <td align="right" valign="middle" class="stack-column-center hide-on-mobile"
+                    style="font-family:'Mazzard Soft', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#333333; font-size:32px;">
+                    Evento
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- HERO: Dark with Glasses -->
+
+          <!-- hero -->
+          <tr>
+            <td align="center" valign="top" style="background-color: #ffffff; position: relative; z-index: 2;">
+              <div style="position: relative; width: 100%; max-width: 1200px; margin: 0 auto;">
+                <!-- Responsive hero image -->
+                <img src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Hero_large.png" class="hero-desktop" width="100%" style="display:block;max-width:1200px;height:auto;margin:0 auto;border:0;outline:none;" alt="Hero Desktop" />
+                <img src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Hero_medium.png" class="hero-tablet" width="100%" style="display:none;max-width:900px;height:auto;margin:0 auto;border:0;outline:none;" alt="Hero Tablet" />
+                <img src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Hero_small.png" class="hero-mobile" width="100%" style="display:none;max-width:600px;height:auto;margin:0 auto;border:0;outline:none;" alt="Hero Mobile" />
+              </div>
+            </td>
+          </tr>
+
+          <!-- UNIFIED SECTION WITH SHARED BACKGROUND -->
+          <tr>
+            <td class="rocket-bg"
+              style="background-repeat: no-repeat; background-position: right bottom; background-size: cover; margin-top: 100px;">
+              <!-- Description & Details -->
+              <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td class="padding"
+                    style="height: 350px; max-height: 450px; padding:40px 80px; font-family:'Mazzard Soft', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#333333; font-size: 42px; line-height:auto; text-align: center; position: relative; background: none;">
+                    <p style="margin-top:0; font-size: 28px; ">
+                      Un aperitivo esclusivo con il team di Stratos Gaming, la prima piattaforma che connette
+                      sviluppatori,
+                      videogiocatori e investitori.
+                    </p>
+                    <p style="margin:30px 0 10px; font-weight:500; color:#0066FF; font-size: 32px;">
+                      1° luglio 2025
+                    </p>
+                    <p style="margin:0; font-size: 28px;">
+                      Via del Casale di S. Pio V 44,<br>
+                      00165 Roma RM
+                    </p>
+                    <p style="margin:10px 0 10px; font-weight:500; color:#0066FF; font-size: 32px;">
+                      Ore 18:00
+                    </p>
+                  </td>
+                </tr>
+                <!-- More Info + Rocket -->
+                <tr>
+                  <td class="padding coloredText"
+                    style="padding:40px 20px 237px 20px; position: relative; font-family:'Mazzard Soft', 'Helvetica Neue', Helvetica, Arial, sans-serif; padding-bottom: 237px">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td valign="top" class="stack-column"
+                          style="font-family:'Mazzard Soft', 'Helvetica Neue', Helvetica, Arial, sans-serif; position: relative; z-index: 3;">
+                          <p class="info-paragraph" style="font-size:28px; font-weight:500; border-radius:3px;">
+                            Partecipa all'evento <br>"Investors Meetup di Stratos". </p>
+                          <p class="info-paragraph" style="font-size:28px; font-weight:500; border-radius:3px;">
+                            Incontra i
+                            founder e scopri la loro
+                            visione
+                            dietro ad uno dei progetti più interessanti per il futuro del gaming indie. <br>
+
+                            Per noi la tua presenza è molto importante, registrati per confermarla!
+                          </p>
+                        </td>
+                        <td align="right" valign="bottom" class="stack-column-center"
+                          style="padding-top:20px; position: relative; z-index: 3;">
+                          <!-- No image here, background is unified -->
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- FEATURES: Cosa ti aspetta? -->
+          <tr>
+            <td bgcolor="#ffffff" class="padding" style="padding:0 40px 0 40px; text-align:center; ">
+
+
+              <div style="display:inline-block; text-align:left; margin-right: 25px;">
+                <!-- Timeline item 1 -->
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:25px;">
+                  <tr>
+                    <td class="icon-cell">
+                      <div class="icon-circle">
+                        <img
+                          src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Icon_+(1).png"
+                          alt="Accredito" class="icons" />
+                      </div>
+                    </td>
+                    <td valign="middle" style="padding-left: 8px;">
+                      <p
+                        style="color:#1B74E4; font-family:'Mazzard Soft', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:32px; font-weight:500; margin:0 0 5px;">
+                        18:00
+                      </p>
+                      <p
+                        style="font-family:'Mazzard Soft', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#333333; font-size:32px; font-weight:300; line-height:40px; margin:0;">
+                        Accredito e Welcome Drink
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+
+                <!-- Timeline item 2 -->
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom:25px;">
+                  <tr>
+                    <td class="icon-cell">
+                      <div class="icon-circle">
+                        <img
+                          src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Icon_+(2).png"
+                          alt="Presentazione" class="icons" />
+                      </div>
+                    </td>
+                    <td valign="middle" style="padding-left: 8px;">
+                      <p
+                        style="color:#1B74E4; font-family:'Mazzard Soft', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:32px; font-weight:500; margin:0 0 5px;">
+                        18:30
+                      </p>
+                      <p
+                        style="font-family:'Mazzard Soft', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#333333; font-size:32px; font-weight:300; line-height:40px; margin:0;">
+                        Inizio presentazione
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+
+                <!-- Timeline item 3 -->
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td class="icon-cell">
+                      <div class="icon-circle">
+                        <img
+                          src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Icon_+(3).png"
+                          alt="Networking" class="icons" />
+                      </div>
+                    </td>
+                    <td valign="middle" style="padding-left: 8px;">
+                      <p
+                        style="color:#1B74E4; font-family:'Mazzard Soft', 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size:32px; font-weight:500; margin:0 0 5px;">
+                        19:15
+                      </p>
+                      <p
+                        style="font-family:'Mazzard Soft', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#333333; font-size:32px; font-weight:300; line-height:40px; margin:0;">
+                        Networking & Light Dinner
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+                <!-- CTA BUTTON -->
+          <tr>
+            <td bgcolor="#ffffff" align="center" style="padding:40px 0 60px 0;">
+              <a href="https://www.eventbrite.it/e/1370933120869?aff=oddtdtcreator" target="_blank" style="
+                  display: inline-block;
+                  background: linear-gradient(90deg, #D20B76 0%, #A20075 100%);
+                  color: #ffffff;
+                  text-decoration: none;
+                  font-family: 'Mazzard Soft', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+                  font-size: 28px;
+                  font-weight: 500;
+                  text-transform: uppercase;
+                  padding: 24px 64px;
+                  border-radius: 999px;
+                  letter-spacing: 2px;
+                  box-shadow: 0 2px 8px rgba(162,0,117,0.08);
+                ">
+                REGISTRATI ORA
+              </a>
+            </td>
+          </tr>
+          </div>
+      </td>
+    </tr>
+    <td bgcolor="#1A1C2A" class="padding" style="padding:40px 0 0 0; font-family:'Mazzard Soft', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#aaaaaa; font-size:18px; text-align:center;">
+      <!-- Title -->
+      <p style="margin:0 0 32px 0; color:#3399FF; font-size:40px; font-weight:500; text-align:center;">Resta in contatto</p>
+      <!-- Social links -->
+      <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="margin:0 auto 40px auto;">
+        <tr>
+          <td align="right" valign="top" style="padding:0 32px 0 0;">
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding:0 12px 16px 0;">
+                  <a href="https://discord.gg/stratos" target="_blank" style="text-decoration:none;">
+                    <img src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Social_Discord.png" width="40" alt="Discord" style="display:inline-block; vertical-align:middle;" />
+                  </a>
+                </td>
+                <td style="color:#fff; font-size:24px; font-family:'Mazzard Soft', Arial, sans-serif; padding-bottom:16px;">
+                  <a href="https://discord.gg/stratos" target="_blank" style="color:#fff; text-decoration:none;">stratos.gaming</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 12px 0 0;">
+                  <a href="https://instagram.com/stratos_official" target="_blank" style="text-decoration:none;">
+                    <img src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Social_Insta.png" width="40" alt="Instagram" style="display:inline-block; vertical-align:middle;" />
+                  </a>
+                </td>
+                <td style="color:#fff; font-size:24px; font-family:'Mazzard Soft', Arial, sans-serif;">
+                  <a href="https://instagram.com/stratos_official" target="_blank" style="color:#fff; text-decoration:none;">stratos_official</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+          <td align="left" valign="top" style="padding:0 0 0 32px;">
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding:0 12px 16px 0;">
+                  <a href="https://linkedin.com/company/stratos-gaming" target="_blank" style="text-decoration:none;">
+                    <img src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Social_LinkedIn.png" width="40" alt="LinkedIn" style="display:inline-block; vertical-align:middle;" />
+                  </a>
+                </td>
+                <td style="color:#fff; font-size:24px; font-family:'Mazzard Soft', Arial, sans-serif; padding-bottom:16px;">
+                  <a href="https://linkedin.com/company/stratos-gaming" target="_blank" style="color:#fff; text-decoration:none;">stratos-gaming</a>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 12px 0 0;">
+                  <a href="https://reddit.com/r/stratos_gaming" target="_blank" style="text-decoration:none;">
+                    <img src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Social_reddit.png" width="40" alt="Reddit" style="display:inline-block; vertical-align:middle;" />
+                  </a>
+                </td>
+                <td style="color:#fff; font-size:24px; font-family:'Mazzard Soft', Arial, sans-serif;">
+                  <a href="https://reddit.com/r/stratos_gaming" target="_blank" style="color:#fff; text-decoration:none;">stratos_gaming</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <!-- Bottom row -->
+      <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-top:40px;">
+        <tr>
+          <td align="left" style="color:#fff; font-size:24px; font-family:'Mazzard Soft', Arial, sans-serif; padding-left:40px;">
+            <a href="https://www.iubenda.com/privacy-policy/37001222" style="color:#fff; text-decoration:none;">Politica sulla Privacy</a>
+          </td>
+          <td align="center" style="padding:0 8px;">
+            <img src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Logo_Small_White.png" width="56" alt="Str atos Logo" style="display:inline-block; vertical-align:middle; margin: 0 16px 0 16px;" />
+            <img src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Logo-Unilink.png" width="120" alt="Unilink Logo" style="display:inline-block; vertical-align:middle; margin-left:26px; padding: 16px;" />
+          </td>
+          <td align="right" style="color:#fff; font-size:24px; font-family:'Mazzard Soft', Arial, sans-serif; padding-right:40px;">
+            Copyright © 2025 Stratos
+          </td>
+        </tr>
+      </table>
+    </td>
+    </tr>
+
+
+
+  </table>
+  <!-- END MAIN CONTAINER -->
+
+  </td>
+  </tr>
+  </table>
+</body>
+
+</html>

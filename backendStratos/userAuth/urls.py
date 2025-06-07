@@ -1,7 +1,8 @@
 from django.urls import path, include
 from .views import (
     SingupView, GetCSRFToken, LoginView, LogoutView, CheckAuthenticatedView, 
-    VerifyEmailView, GoogleLoginView, GoogleSignupView
+    VerifyEmailView, GoogleLoginView, GoogleSignupView, DiscordLoginView, DiscordSignupView,
+    DiscordLinkView, DiscordUnlinkView
 )
 
 urlpatterns = [
@@ -13,4 +14,8 @@ urlpatterns = [
     path('verify-email/<int:uid>/<str:token>/', VerifyEmailView.as_view(), name='verify-email'),
     path('google/', GoogleLoginView.as_view(), name='google_login'),  # POST /auth/google/
     path('google/signup/', GoogleSignupView.as_view(), name='google_signup'),  # POST /auth/google/signup/
+    path('discord/', DiscordLoginView.as_view(), name='discord_login'),  # POST /auth/discord/
+    path('discord/signup/', DiscordSignupView.as_view(), name='discord_signup'),  # POST /auth/discord/signup/
+    path('discord/link/', DiscordLinkView.as_view(), name='discord_link'),  # POST /auth/discord/link/
+    path('discord/unlink/', DiscordUnlinkView.as_view(), name='discord_unlink'),  # POST /auth/discord/unlink/
 ]

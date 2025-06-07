@@ -21,6 +21,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from .mailServer import send_notification
 from userAuth.views import GoogleLoginView, GoogleSignupView
+from Mailing.views import SendEmailHelpRequest, SendEmailEvent
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,6 +30,11 @@ urlpatterns = [
     path('auth/', include('userAuth.urls')),
     path('projects/', include('projectsModule.urls')),
     path('notification/create-email/', send_notification, name='create_email'),
+    # Mailing endpoints
+    path('api/mail/', SendEmailHelpRequest.as_view(), name='send_email_help_request'),
+    path('api/mail/event/', SendEmailEvent.as_view(), name='send_email_event'),
+    # Apis endpoints
+    path('api/', include('Apis.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

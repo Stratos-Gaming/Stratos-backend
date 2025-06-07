@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stratos Gaming - Contatto</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f8fa;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .logo {
+            max-width: 180px;
+            height: auto;
+        }
+        
+        .content {
+            padding: 30px 20px;
+            color: #333333;
+        }
+        
+        .greeting {
+            font-size: 24px;
+            color: #1a73e8;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .message {
+            font-size: 16px;
+            color: #444444;
+            margin-bottom: 25px;
+        }
+        
+        .resources {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .resource-item {
+            margin-bottom: 15px;
+        }
+        
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #1a73e8;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        
+        .button:hover {
+            background-color: #0d47a1;
+        }
+        
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666666;
+            font-size: 14px;
+        }
+        
+        .social-links {
+            margin-top: 15px;
+        }
+        
+        .social-icon {
+            display: inline-block;
+            margin: 0 10px;
+        }
+        
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                width: 100%;
+                border-radius: 0;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <img src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/Logo_Vertical.png" alt="Stratos Gaming Logo" class="logo">
+        </div>
+        
+        <div class="content">
+            <h1 class="greeting">Gentile {{ user_name }},</h1>
+            
+            <p class="message">
+                Abbiamo ricevuto la vostra richiesta di chiarimento.
+            </p>
+            
+            <p class="message">
+                Se desideri ulteriori chiarimenti, puoi rispondere direttamente a questa email, inizieremo qui una conversazione.
+            </p>
+            
+            <p class="message">
+                Il nostro team ti risponderà al più presto per fornirti tutte le informazioni necessarie.
+            </p>
+            
+            <div class="resources">
+                <h2 style="color: #1a73e8; margin-top: 0;">Risorse utili</h2>
+                
+                
+                <div class="resource-item">
+                    <a href="https://stratosgaming.it" class="button">FAQ</a>
+                    <p style="margin-top: 8px; margin-bottom: 0;">Trova risposte alle domande più frequenti</p>
+                </div>
+                
+                <div class="resource-item">
+                    <a href="https://linktr.ee/stratosgaming" class="button">Social</a>
+                    <p style="margin-top: 8px; margin-bottom: 0;">Guarda i nostri social</p>
+                </div>
+            </div>
+            
+            <p class="message">
+                Grazie per aver scelto Stratos Gaming. Siamo qui per ascoltare le tue idee e rispondere alle tue domande.
+            </p>
+            
+            <p style="color: #1a73e8; font-weight: 500;">
+                Cordiali saluti,<br>
+                Il team di Stratos Gaming
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2024 Stratos Gaming. Tutti i diritti riservati.</p>
+            <div class="social-links">
+                <a href="https://instagram.com/stratos_official" class="social-icon">
+                    <img src="https://cdn-icons-png.flaticon.com/512/174/174855.png" alt="Instagram" width="24">
+                </a>
+                <a href="https://linkedin.com/company/stratosgaming" class="social-icon">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" width="24">
+                </a>
+                <a href="https://discord.gg/stratosgaming" class="social-icon">
+                    <img src="https://cdn-icons-png.flaticon.com/512/5968/5968756.png" alt="Discord" width="24">
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
