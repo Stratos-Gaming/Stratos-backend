@@ -293,8 +293,11 @@ CSRF_TRUSTED_ORIGINS = [
 
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SECURE = False  # Set to False for development
-CSRF_COOKIE_SAMESITE = None  # Set to None for development
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_USE_SESSIONS = False
+CSRF_COOKIE_DOMAIN = None
+CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 
 #EMAILS DATA
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
