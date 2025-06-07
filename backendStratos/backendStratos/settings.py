@@ -170,6 +170,26 @@ CORS_ALLOWED_ORIGINS = [
     'http://3.74.166.136:5173',
 ]
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]
+CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:5173',
     'http://3.74.166.136',
@@ -180,8 +200,6 @@ CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = 'Lax'
-
-ACCESS_CONTROL_ALLOW_ORIGIN = 'http://3.74.166.136'
 
 #EMAILS DATA
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
