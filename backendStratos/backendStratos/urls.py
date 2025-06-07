@@ -27,30 +27,41 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import logging
 
-logger = logging.getLogger('django')
+logger = logging.getLogger('corsheaders')  # Changed to corsheaders logger
 
 @csrf_exempt
 @require_http_methods(["GET", "POST", "OPTIONS"])
 def debug_view(request):
-    logger.debug(f"Request method: {request.method}")
-    logger.debug(f"Request headers: {dict(request.headers)}")
-    logger.debug(f"Request GET params: {request.GET}")
-    logger.debug(f"Request POST data: {request.POST}")
-    logger.debug(f"Request body: {request.body}")
+    # Log only CORS-relevant information
+    logger.debug("=== CORS Debug Request ===")
+    logger.debug(f"Origin: {request.headers.get('Origin', 'No Origin')}")
+    logger.debug(f"Access-Control-Request-Method: {request.headers.get('Access-Control-Request-Method', 'No Method')}")
+    logger.debug(f"Access-Control-Request-Headers: {request.headers.get('Access-Control-Request-Headers', 'No Headers')}")
+    logger.debug(f"Request Method: {request.method}")
+    logger.debug(f"Request Path: {request.path}")
+    logger.debug("=== End CORS Debug ===")
     
     response = JsonResponse({
-        'message': 'Debug endpoint working',
+        'message': 'CORS Debug Endpoint',
+        'origin': request.headers.get('Origin'),
         'method': request.method,
-        'headers': dict(request.headers),
-        'get_params': dict(request.GET),
-        'post_data': dict(request.POST),
+        'request_headers': {
+            k: v for k, v in request.headers.items() 
+            if k.lower().startswith(('origin', 'access-control', 'content-type', 'authorization'))
+        }
     })
     
-    # Add CORS headers manually for debugging
-    response["Access-Control-Allow-Origin"] = "*"
+    # Add CORS headers
+    origin = request.headers.get('Origin')
+    if origin:
+        response["Access-Control-Allow-Origin"] = origin
+    else:
+        response["Access-Control-Allow-Origin"] = "*"
+    
     response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
     response["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-CSRFToken"
     response["Access-Control-Allow-Credentials"] = "true"
+    response["Access-Control-Max-Age"] = "3600"
     
     return response
 
