@@ -22,9 +22,41 @@ from django.conf import settings
 from .mailServer import send_notification
 from userAuth.views import GoogleLoginView, GoogleSignupView
 from Mailing.views import SendEmailHelpRequest, SendEmailEvent
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+import logging
+
+logger = logging.getLogger('django')
+
+@csrf_exempt
+@require_http_methods(["GET", "POST", "OPTIONS"])
+def debug_view(request):
+    logger.debug(f"Request method: {request.method}")
+    logger.debug(f"Request headers: {dict(request.headers)}")
+    logger.debug(f"Request GET params: {request.GET}")
+    logger.debug(f"Request POST data: {request.POST}")
+    logger.debug(f"Request body: {request.body}")
+    
+    response = JsonResponse({
+        'message': 'Debug endpoint working',
+        'method': request.method,
+        'headers': dict(request.headers),
+        'get_params': dict(request.GET),
+        'post_data': dict(request.POST),
+    })
+    
+    # Add CORS headers manually for debugging
+    response["Access-Control-Allow-Origin"] = "*"
+    response["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    response["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-CSRFToken"
+    response["Access-Control-Allow-Credentials"] = "true"
+    
+    return response
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('debug/', debug_view, name='debug'),
     path('api-auth/', include('rest_framework.urls')),
     path('user/', include('userModule.urls')),
     path('auth/', include('userAuth.urls')),
