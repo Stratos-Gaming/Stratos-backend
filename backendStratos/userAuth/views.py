@@ -293,7 +293,49 @@ class GetCSRFToken(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request, format=None):
-        return Response({'success': 'CSRF cookie set'})
+        from django.conf import settings
+        from django.middleware.csrf import get_token
+        
+        # Get the CSRF token
+        csrf_token = get_token(request)
+        
+        # Log the request details for debugging
+        logger.info(f"CSRF cookie request from: {request.META.get('HTTP_HOST', 'Unknown')}")
+        logger.info(f"User-Agent: {request.META.get('HTTP_USER_AGENT', 'Unknown')}")
+        logger.info(f"Origin: {request.META.get('HTTP_ORIGIN', 'None')}")
+        logger.info(f"Referer: {request.META.get('HTTP_REFERER', 'None')}")
+        logger.info(f"Is secure: {request.is_secure()}")
+        logger.info(f"DEBUG mode: {settings.DEBUG}")
+        
+        # Create response
+        response = Response({
+            'success': 'CSRF cookie set',
+            'csrf_token': csrf_token,
+            'debug_info': {
+                'is_secure': request.is_secure(),
+                'host': request.META.get('HTTP_HOST'),
+                'csrf_cookie_secure': settings.CSRF_COOKIE_SECURE,
+                'csrf_cookie_domain': settings.CSRF_COOKIE_DOMAIN,
+                'csrf_cookie_path': getattr(settings, 'CSRF_COOKIE_PATH', '/'),
+                'csrf_cookie_samesite': settings.CSRF_COOKIE_SAMESITE,
+            } if settings.DEBUG else None
+        })
+        
+        # Explicitly set CSRF cookie with proper attributes
+        response.set_cookie(
+            settings.CSRF_COOKIE_NAME,
+            csrf_token,
+            max_age=settings.CSRF_COOKIE_AGE if hasattr(settings, 'CSRF_COOKIE_AGE') else None,
+            expires=None,
+            path=getattr(settings, 'CSRF_COOKIE_PATH', '/'),
+            domain=settings.CSRF_COOKIE_DOMAIN,
+            secure=settings.CSRF_COOKIE_SECURE,
+            httponly=settings.CSRF_COOKIE_HTTPONLY,
+            samesite=settings.CSRF_COOKIE_SAMESITE
+        )
+        
+        logger.info(f"CSRF cookie set with token: {csrf_token[:10]}...")
+        return response
 
 class VerifyEmailView(APIView):
     permission_classes = (permissions.AllowAny,)

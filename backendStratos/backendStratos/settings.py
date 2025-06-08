@@ -232,10 +232,10 @@ REST_FRAMEWORK = {
     ],
 }
 
-# CORS settings
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_ALLOW_ALL = True
+# CORS settings - Environment aware
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only allow all origins in development
+CORS_ALLOW_CREDENTIALS = True  # Required for cookies
+CORS_ORIGIN_ALLOW_ALL = DEBUG  # Only allow all origins in development
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
@@ -299,13 +299,22 @@ CSRF_TRUSTED_ORIGINS = [
     'https://www.stratosgaming.com',
 ]
 
+# CSRF settings - Environment aware
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = not DEBUG  # True for production (HTTPS), False for development (HTTP)
 CSRF_COOKIE_SAMESITE = 'Lax'
 CSRF_USE_SESSIONS = False
-CSRF_COOKIE_DOMAIN = None
+CSRF_COOKIE_DOMAIN = '.stratosgaming.com' if not DEBUG else None  # Set domain only for production
+CSRF_COOKIE_PATH = '/'  # Explicitly set path
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
+
+# Session cookie settings - Environment aware
+SESSION_COOKIE_SECURE = not DEBUG  # True for production (HTTPS), False for development (HTTP)
+SESSION_COOKIE_HTTPONLY = True  # Keep session cookies HTTP-only for security
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_DOMAIN = '.stratosgaming.com' if not DEBUG else None  # Set domain only for production
+SESSION_COOKIE_AGE = 1209600  # 2 weeks
 
 #EMAILS DATA
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
