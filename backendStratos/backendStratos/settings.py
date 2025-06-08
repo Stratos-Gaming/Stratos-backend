@@ -93,7 +93,7 @@ INSTAGRAM_ACCESS_TOKEN = 'EAAXEbHvvssoBO6mEULC5OHw9d4qAKhPVC8WdiTQZBIfqCA11Wy5jl
 SECRET_KEY = 'django-insecure-%5le_@gd7irhbox$kb$-ctek$)$^t2+d98_v&k)xe0sotpai&0'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True  # Set to True for development
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'  # Environment-aware DEBUG setting
 
 ALLOWED_HOSTS = ['3.74.166.136', 'localhost', '127.0.0.1', '0.0.0.0', 'dev.d2lv8dn21inij8.amplifyapp.com', 'api.stratosgaming.com']
 
@@ -232,10 +232,10 @@ REST_FRAMEWORK = {
     ],
 }
 
-# CORS settings - Environment aware
-CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only allow all origins in development
-CORS_ALLOW_CREDENTIALS = True  # Required for cookies
-CORS_ORIGIN_ALLOW_ALL = DEBUG  # Only allow all origins in development
+# CORS settings - Cross-origin aware
+CORS_ALLOW_ALL_ORIGINS = False  # Use explicit allowed origins for security
+CORS_ALLOW_CREDENTIALS = True  # Required for cross-origin cookies
+CORS_ORIGIN_ALLOW_ALL = False  # Use explicit allowed origins for security
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
@@ -299,21 +299,21 @@ CSRF_TRUSTED_ORIGINS = [
     'https://www.stratosgaming.com',
 ]
 
-# CSRF settings - Environment aware
+# CSRF settings - Cross-origin aware
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SECURE = not DEBUG  # True for production (HTTPS), False for development (HTTP)
-CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = True  # Always True for cross-origin cookies (required for SameSite=None)
+CSRF_COOKIE_SAMESITE = 'None'  # Required for cross-origin cookies
 CSRF_USE_SESSIONS = False
-CSRF_COOKIE_DOMAIN = '.stratosgaming.com' if not DEBUG else None  # Set domain only for production
+CSRF_COOKIE_DOMAIN = None  # Don't set domain for cross-origin cookies
 CSRF_COOKIE_PATH = '/'  # Explicitly set path
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 
-# Session cookie settings - Environment aware
-SESSION_COOKIE_SECURE = not DEBUG  # True for production (HTTPS), False for development (HTTP)
+# Session cookie settings - Cross-origin aware
+SESSION_COOKIE_SECURE = True  # Always True for cross-origin cookies
 SESSION_COOKIE_HTTPONLY = True  # Keep session cookies HTTP-only for security
-SESSION_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_DOMAIN = '.stratosgaming.com' if not DEBUG else None  # Set domain only for production
+SESSION_COOKIE_SAMESITE = 'None'  # Required for cross-origin cookies
+SESSION_COOKIE_DOMAIN = None  # Don't set domain for cross-origin cookies
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 
 #EMAILS DATA
