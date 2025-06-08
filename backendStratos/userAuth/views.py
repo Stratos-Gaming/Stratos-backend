@@ -398,7 +398,10 @@ class GoogleLoginView(APIView):
             return Response({
                 'success': 'User authenticated with Google',
                 'username': user.username,
-                'email': user.email
+                'email': user.email,
+                'user': {
+                    'isEmailVerified': stratos_user.isEmailVerified
+                }
             })
             
         except User.DoesNotExist:
