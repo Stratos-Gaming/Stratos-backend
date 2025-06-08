@@ -227,25 +227,30 @@ class SingupView(APIView):
         email = data.get('email', '')  # Get email with empty default if not provided
 
         if password == re_password:
+            # Check username uniqueness
             if User.objects.filter(username=username).exists():
                 return Response({'error': 'Username already exists'})
+            
+            # Check email uniqueness if email is provided
+            if email and User.objects.filter(email=email).exists():
+                return Response({'error': 'Email already exists'})
+            
+            if checkForPasswordRequirements(password) == False:
+                return Response({'error': 'Password does not have all the requirements'})
             else:
-                if checkForPasswordRequirements(password) == False:
-                    return Response({'error': 'Password does not have all the requirements'})
-                else:
-                    user = User.objects.create_user(
-                        username=username, 
-                        email=email,
-                        password=password, 
-                        last_login=timezone.now()
-                    )
-                    user.save()
-                    user = User.objects.get(id=user.id)
-                    user_profile = StratosUser(user=user, phone='', address='', city='', state='', country='', zip='')
-                    user_profile.save()
-                    if (email != ''):  # Send verification email if email provided
-                        send_verification_email(user, request)
-                    return Response({'success': 'User created successfully'})
+                user = User.objects.create_user(
+                    username=username, 
+                    email=email,
+                    password=password, 
+                    last_login=timezone.now()
+                )
+                user.save()
+                user = User.objects.get(id=user.id)
+                user_profile = StratosUser(user=user, phone='', address='', city='', state='', country='', zip='')
+                user_profile.save()
+                if (email != ''):  # Send verification email if email provided
+                    send_verification_email(user, request)
+                return Response({'success': 'User created successfully'})
         else:
             return Response({'error': 'Passwords do not match'})
         
@@ -436,12 +441,15 @@ class GoogleSignupView(APIView):
         google_id = google_user_info['google_id']
         
         try:
-            # Check if user already exists
+            # Check if user already exists with this email
             if User.objects.filter(email=email).exists():
                 return Response({'error': 'User with this email already exists'}, status=400)
             
             # Use provided username or generate one from email
-            if provided_username and not User.objects.filter(username=provided_username).exists():
+            if provided_username:
+                # Check if provided username is unique
+                if User.objects.filter(username=provided_username).exists():
+                    return Response({'error': 'Username already exists'}, status=400)
                 username = provided_username
             else:
                 # Create username from email (before @ symbol) and make it unique
@@ -716,7 +724,7 @@ class DiscordSignupView(APIView):
                 logger.warning(f"Discord signup failed: No email for user {discord_username}")
                 return Response({'error': 'Email is required for registration'}, status=400)
             
-            # Check if user already exists
+            # Check if user already exists with this email
             if User.objects.filter(email=email).exists():
                 logger.warning(f"Discord signup failed: Email {email} already exists")
                 return Response({'error': 'User with this email already exists'}, status=400)
@@ -727,7 +735,11 @@ class DiscordSignupView(APIView):
                 return Response({'error': 'Discord account is already linked to another user'}, status=400)
             
             # Use provided username or generate one from Discord username
-            if provided_username and not User.objects.filter(username=provided_username).exists():
+            if provided_username:
+                # Check if provided username is unique
+                if User.objects.filter(username=provided_username).exists():
+                    logger.warning(f"Discord signup failed: Username {provided_username} already exists")
+                    return Response({'error': 'Username already exists'}, status=400)
                 username = provided_username
             else:
                 # Create username from Discord username and make it unique
