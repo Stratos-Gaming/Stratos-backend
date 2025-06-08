@@ -95,7 +95,7 @@ SECRET_KEY = 'django-insecure-%5le_@gd7irhbox$kb$-ctek$)$^t2+d98_v&k)xe0sotpai&0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True  # Set to True for development
 
-ALLOWED_HOSTS = ['3.74.166.136', 'localhost', '127.0.0.1', '0.0.0.0', 'dev.d2lv8dn21inij8.amplifyapp.com']
+ALLOWED_HOSTS = ['3.74.166.136', 'localhost', '127.0.0.1', '0.0.0.0', 'dev.d2lv8dn21inij8.amplifyapp.com', 'api.stratosgaming.com']
 
 
 # Application definition
@@ -238,7 +238,16 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOWED_ORIGINS = [
-    '*'
+    'http://localhost:5173',
+    'http://localhost:5371',
+    'http://3.74.166.136:5371',
+    'http://3.74.166.136',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5371',
+    'https://dev.d2lv8dn21inij8.amplifyapp.com',
+    'https://api.stratosgaming.com',
+    'https://stratosgaming.com',
+    'https://www.stratosgaming.com',
 ]
 
 CORS_ALLOW_METHODS = [
@@ -278,7 +287,16 @@ CORS_URLS_REGEX = r'^/.*$'
 
 # CSRF settings
 CSRF_TRUSTED_ORIGINS = [
-    '*'
+    'http://localhost:5173',
+    'http://localhost:5371',
+    'http://3.74.166.136:5371',
+    'http://3.74.166.136',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5371',
+    'https://dev.d2lv8dn21inij8.amplifyapp.com',
+    'https://api.stratosgaming.com',
+    'https://stratosgaming.com',
+    'https://www.stratosgaming.com',
 ]
 
 CSRF_COOKIE_NAME = "csrftoken"
