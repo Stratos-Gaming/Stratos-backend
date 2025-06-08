@@ -232,11 +232,12 @@ REST_FRAMEWORK = {
     ],
 }
 
-# CORS settings - Cross-origin aware
+# CORS settings - Subdomain aware
 CORS_ALLOW_ALL_ORIGINS = False  # Use explicit allowed origins for security
-CORS_ALLOW_CREDENTIALS = True  # Required for cross-origin cookies
+CORS_ALLOW_CREDENTIALS = True  # Required for cookies
 CORS_ORIGIN_ALLOW_ALL = False  # Use explicit allowed origins for security
 
+# Allow all subdomains of stratosgaming.com
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://localhost:5371',
@@ -248,6 +249,12 @@ CORS_ALLOWED_ORIGINS = [
     'https://api.stratosgaming.com',
     'https://stratosgaming.com',
     'https://www.stratosgaming.com',
+    'https://development.stratosgaming.com',  # Add development subdomain
+]
+
+# Add regex pattern to allow all stratosgaming.com subdomains
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https?://([a-z0-9-]+\.)*stratosgaming\.com$",  # Allow all subdomains
 ]
 
 CORS_ALLOW_METHODS = [
@@ -285,35 +292,21 @@ CORS_EXPOSE_HEADERS = [
 # Remove CORS_REPLACE_HTTPS_REFERER as it's deprecated
 CORS_URLS_REGEX = r'^/.*$'
 
-# CSRF settings
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:5173',
-    'http://localhost:5371',
-    'http://3.74.166.136:5371',
-    'http://3.74.166.136',
-    'http://127.0.0.1:5173',
-    'http://127.0.0.1:5371',
-    'https://dev.d2lv8dn21inij8.amplifyapp.com',
-    'https://api.stratosgaming.com',
-    'https://stratosgaming.com',
-    'https://www.stratosgaming.com',
-]
-
-# CSRF settings - Cross-origin aware
+# CSRF settings - Subdomain aware
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SECURE = True  # Always True for cross-origin cookies (required for SameSite=None)
-CSRF_COOKIE_SAMESITE = 'None'  # Required for cross-origin cookies
+CSRF_COOKIE_SECURE = True  # Always True for HTTPS
+CSRF_COOKIE_SAMESITE = 'Lax'  # Can use Lax for subdomains of same parent domain
 CSRF_USE_SESSIONS = False
-CSRF_COOKIE_DOMAIN = None  # Don't set domain for cross-origin cookies
+CSRF_COOKIE_DOMAIN = '.stratosgaming.com'  # Set to parent domain to allow all subdomains
 CSRF_COOKIE_PATH = '/'  # Explicitly set path
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 
-# Session cookie settings - Cross-origin aware
-SESSION_COOKIE_SECURE = True  # Always True for cross-origin cookies
+# Session cookie settings - Subdomain aware
+SESSION_COOKIE_SECURE = True  # Always True for HTTPS
 SESSION_COOKIE_HTTPONLY = True  # Keep session cookies HTTP-only for security
-SESSION_COOKIE_SAMESITE = 'None'  # Required for cross-origin cookies
-SESSION_COOKIE_DOMAIN = None  # Don't set domain for cross-origin cookies
+SESSION_COOKIE_SAMESITE = 'Lax'  # Can use Lax for subdomains of same parent domain
+SESSION_COOKIE_DOMAIN = '.stratosgaming.com'  # Set to parent domain to allow all subdomains
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 
 #EMAILS DATA
@@ -327,3 +320,23 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # OAuth Settings
 GOOGLE_OAUTH_CLIENT_ID = os.environ.get('GOOGLE_OAUTH_CLIENT_ID', '')
+
+# CSRF trusted origins - Include all subdomains
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:5173',
+    'http://localhost:5371',
+    'http://3.74.166.136:5371',
+    'http://3.74.166.136',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5371',
+    'https://dev.d2lv8dn21inij8.amplifyapp.com',
+    'https://api.stratosgaming.com',
+    'https://stratosgaming.com',
+    'https://www.stratosgaming.com',
+    'https://development.stratosgaming.com',  # Add development subdomain
+]
+
+# Add regex pattern to trust all stratosgaming.com subdomains
+CSRF_TRUSTED_ORIGIN_REGEXES = [
+    r"^https?://([a-z0-9-]+\.)*stratosgaming\.com$",  # Trust all subdomains
+]
