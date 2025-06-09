@@ -64,10 +64,26 @@ class UpdateSelfInfo(APIView, IsUserVerifiedStratosPermissionMixin):
                 if User.objects.filter(email=data['email']).exclude(pk=user.pk).exists():
                     return Response({'error': 'Email is already in use'}, status=status.HTTP_400_BAD_REQUEST)
             
+            # Validate name if provided
+            if 'name' in data:
+                name = data['name'].strip()
+                if not name:
+                    return Response({'error': 'Name cannot be empty'}, status=status.HTTP_400_BAD_REQUEST)
+                if len(name) > 150:  # Django's default max_length for first_name
+                    return Response({'error': 'Name is too long'}, status=status.HTTP_400_BAD_REQUEST)
+                user.first_name = name
+            
+            # Validate surname if provided
+            if 'surname' in data:
+                surname = data['surname'].strip()
+                if not surname:
+                    return Response({'error': 'Surname cannot be empty'}, status=status.HTTP_400_BAD_REQUEST)
+                if len(surname) > 150:  # Django's default max_length for last_name
+                    return Response({'error': 'Surname is too long'}, status=status.HTTP_400_BAD_REQUEST)
+                user.last_name = surname
+            
             # Update user fields with validation
             user.username = data.get('username', user.username)
-            user.first_name = data.get('name', user.first_name)
-            user.last_name = data.get('surname', user.last_name)
             user.email = data.get('email', user.email)
 
             # Update StratosUser fields if provided
