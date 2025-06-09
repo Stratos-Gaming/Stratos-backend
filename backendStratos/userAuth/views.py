@@ -324,7 +324,7 @@ class LoginView(APIView):
             if user is not None:
                 auth.login(request, user)
                 stratos_user = StratosUser.objects.get(user=user)
-                return Response({'success': 'User authenticated', 'username': username, 'isEmailVerified': stratos_user.is_email_verified})
+                return Response({'success': 'User authenticated', 'username': username, 'isEmailVerified': stratos_user.isEmailVerified})
             else:
                 return Response({'error': 'Error authenticating'})
         except Exception as e:
