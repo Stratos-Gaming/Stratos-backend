@@ -64,29 +64,29 @@ class UpdateSelfInfo(APIView, IsUserVerifiedStratosPermissionMixin):
                     return Response({'error': 'Email is already in use'}, status=status.HTTP_400_BAD_REQUEST)
             
             # Validate name if provided
-            if 'name' in data:
-                name = data['name'].strip()
-                if not name:
-                    return Response({'error': 'Name cannot be empty'}, status=status.HTTP_400_BAD_REQUEST)
-                if len(name) > 150:  # Django's default max_length for first_name
-                    return Response({'error': 'Name is too long'}, status=status.HTTP_400_BAD_REQUEST)
-                user.first_name = name
+            if 'first_name' in data:
+                first_name = data['first_name'].strip()
+                if not first_name:
+                    return Response({'error': 'First name cannot be empty'}, status=status.HTTP_400_BAD_REQUEST)
+                if len(first_name) > 150:  # Django's default max_length for first_name
+                    return Response({'error': 'First name is too long'}, status=status.HTTP_400_BAD_REQUEST)
+                user.first_name = first_name
             
             # Validate surname if provided
-            if 'surname' in data:
-                surname = data['surname'].strip()
-                if not surname:
-                    return Response({'error': 'Surname cannot be empty'}, status=status.HTTP_400_BAD_REQUEST)
-                if len(surname) > 150:  # Django's default max_length for last_name
-                    return Response({'error': 'Surname is too long'}, status=status.HTTP_400_BAD_REQUEST)
-                user.last_name = surname
+            if 'last_name' in data:
+                last_name = data['last_name'].strip()
+                if not last_name:
+                    return Response({'error': 'Last name cannot be empty'}, status=status.HTTP_400_BAD_REQUEST)
+                if len(last_name) > 150:  # Django
+                    return Response({'error': 'Last name is too long'}, status=status.HTTP_400_BAD_REQUEST)
+                user.last_name = last_name
             
             # Update user fields with validation
             user.username = data.get('username', user.username)
             user.email = data.get('email', user.email)
             user.first_name = data.get('name', user.first_name)
             user.last_name = data.get('surname', user.last_name)
-            
+
             # Update StratosUser fields if provided
             if 'phone' in data:
                 stratos_user.phone = data.get('phone')
