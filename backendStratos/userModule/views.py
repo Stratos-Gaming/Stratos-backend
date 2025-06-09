@@ -12,7 +12,7 @@ from .mixins import IsUserVerifiedStratosPermissionMixin, IsUserAuthenticatedPer
 from django.conf import settings
 from django.views.decorators.http import require_http_methods
 from django.middleware.csrf import get_token
-
+from django.contrib.auth import logout
 class GetSelfInfo(APIView, IsUserAuthenticatedPermissionMixin): 
 
     def get(self, request):
@@ -218,6 +218,12 @@ class DeleteUserAccount(APIView, IsUserAuthenticatedPermissionMixin):
             
             # Delete the user correctly with the associated StratosUser
             StratosUser.objects.get(user=user).delete()
+            logout(request)
+            response = Response({'success': 'Logged out'})
+            # Clear the session cookie
+            response.delete_cookie('sessionid')
+            # Clear the CSRF cookie
+            response.delete_cookie('csrftoken')
             user.delete()
             
             return Response({'success': 'Account deactivated successfully'}, 
