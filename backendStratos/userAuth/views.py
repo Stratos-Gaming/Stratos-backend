@@ -242,7 +242,8 @@ class SingupView(APIView):
         re_password = data['re_password']
         email = data.get('email', '')  # Get email with empty default if not provided
         user_types = data.get('user_types', [])  # Get user types with empty list default
-
+        name = data.get('name', '')
+        surname = data.get('surname', '')
         # Validate user types
         is_valid, error_message = validate_user_types(user_types)
         if not is_valid:
@@ -264,7 +265,9 @@ class SingupView(APIView):
                     username=username, 
                     email=email,
                     password=password, 
-                    last_login=timezone.now()
+                    last_login=timezone.now(),
+                    first_name=name,
+                    last_name=surname
                 )
                 user.save()
                 user = User.objects.get(id=user.id)
