@@ -2,14 +2,22 @@ from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 
-# Model for user: username, fisrtname, lastname, email, password, isStaff, isactive, issuperuser, lastlogin, datejoined, isautenthicated, isanonymous | relations: groups, user_permissions
-class StratosUser(models.Model):
+class UserType(models.Model):
+    """Model to store user types"""
     USER_TYPE_CHOICES = [
         ('investor', 'Investor'),
         ('developer', 'Developer'),
         ('gamer', 'Gamer'),
     ]
     
+    type = models.CharField(max_length=20, choices=USER_TYPE_CHOICES, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.get_type_display()
+
+# Model for user: username, fisrtname, lastname, email, password, isStaff, isactive, issuperuser, lastlogin, datejoined, isautenthicated, isanonymous | relations: groups, user_permissions
+class StratosUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='stratos_user')
     #projects = models.ManyToManyField(Project, related_name='users')
     phone = models.CharField(max_length=20)
@@ -19,9 +27,9 @@ class StratosUser(models.Model):
     country = models.CharField(max_length=20)
     zip = models.CharField(max_length=10)
     
-    # User type field
-    userType = models.CharField(max_length=20, choices=USER_TYPE_CHOICES, default='gamer')
-
+    # User types - many-to-many relationship
+    user_types = models.ManyToManyField(UserType, related_name='users', blank=True)
+    
     # OAuth integrations
     google_id = models.CharField(max_length=200, null=True, blank=True)
     discord_id = models.CharField(max_length=200, null=True, blank=True)
@@ -51,6 +59,10 @@ class StratosUser(models.Model):
         elif self.discord_username:
             return self.discord_username
         return self.user.username
+    
+    def get_user_types(self):
+        """Get list of user types as strings"""
+        return [ut.type for ut in self.user_types.all()]
     
     def __str__(self):
         return self.user.username  # Access username through the related User model
