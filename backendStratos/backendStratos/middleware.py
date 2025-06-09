@@ -5,10 +5,16 @@ class CSPMiddleware:
     def __call__(self, request):
         response = self.get_response(request)
         
-        # Set CSP headers
+        # Set CSP headers with updated connect-src to include development domain
         csp_policy = (
             "default-src 'self'; "
-            "connect-src 'self' http://3.74.166.136:5371 http://localhost:5371; "
+            "connect-src 'self' "
+            "http://3.74.166.136:5371 "
+            "http://localhost:5371 "
+            "https://development.stratosgaming.com "
+            "https://api.stratosgaming.com "
+            "https://discord.com "
+            "https://accounts.google.com; "
             "script-src 'self' 'unsafe-inline' 'unsafe-eval'; "
             "style-src 'self' 'unsafe-inline'; "
             "img-src 'self' data: https:; "

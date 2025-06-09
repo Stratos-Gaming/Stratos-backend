@@ -10,6 +10,9 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from .mixins import IsUserVerifiedStratosPermissionMixin, IsUserAuthenticatedPermissionMixin
 from django.conf import settings
+from django.views.decorators.http import require_http_methods
+from django.middleware.csrf import get_token
+
 class GetSelfInfo(APIView, IsUserAuthenticatedPermissionMixin): 
 
     def get(self, request):
@@ -228,6 +231,7 @@ class DeleteUserAccount(APIView, IsUserAuthenticatedPermissionMixin):
 class UserSubscriptionPreferencesView(APIView, IsUserAuthenticatedPermissionMixin):
     """Get and update user subscription preferences"""
     
+    @method_decorator(ensure_csrf_cookie)
     def get(self, request):
         try:
             from .models import UserSubscriptionPreferences
@@ -240,13 +244,15 @@ class UserSubscriptionPreferencesView(APIView, IsUserAuthenticatedPermissionMixi
             )
             
             serializer = UserSubscriptionPreferencesSerializer(preferences)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            response = Response(serializer.data, status=status.HTTP_200_OK)
+            response["Access-Control-Allow-Credentials"] = "true"
+            return response
         except Exception as e:
             print(f"Error retrieving subscription preferences: {str(e)}")
             return Response({'error': 'Failed to retrieve subscription preferences'}, 
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
-    @method_decorator(csrf_protect, name='dispatch')
+    @method_decorator(csrf_protect)
     def post(self, request):
         try:
             from .models import UserSubscriptionPreferences
@@ -267,7 +273,9 @@ class UserSubscriptionPreferencesView(APIView, IsUserAuthenticatedPermissionMixi
             preferences.save()
             
             serializer = UserSubscriptionPreferencesSerializer(preferences)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            response = Response(serializer.data, status=status.HTTP_200_OK)
+            response["Access-Control-Allow-Credentials"] = "true"
+            return response
         except Exception as e:
             print(f"Error updating subscription preferences: {str(e)}")
             return Response({'error': 'Failed to update subscription preferences'}, 
@@ -303,6 +311,7 @@ class UnsubscribeAllView(APIView, IsUserAuthenticatedPermissionMixin):
 class SocialConnectionsView(APIView, IsUserAuthenticatedPermissionMixin):
     """Get connected social accounts"""
     
+    @method_decorator(ensure_csrf_cookie)
     def get(self, request):
         try:
             from .models import UserSocialConnection
@@ -328,10 +337,12 @@ class SocialConnectionsView(APIView, IsUserAuthenticatedPermissionMixin):
                 'email': request.user.email if google_connected else ''
             }
             
-            return Response({
+            response = Response({
                 'discord': discord_info,
                 'google': google_info
             }, status=status.HTTP_200_OK)
+            response["Access-Control-Allow-Credentials"] = "true"
+            return response
         except Exception as e:
             print(f"Error retrieving social connections: {str(e)}")
             return Response({'error': 'Failed to retrieve social connections'}, 
@@ -383,8 +394,10 @@ class ConnectDiscordView(APIView, IsUserAuthenticatedPermissionMixin):
                 }
             )
             
-            return Response({'success': 'Discord account connected successfully'}, 
+            response = Response({'success': 'Discord account connected successfully'}, 
                             status=status.HTTP_200_OK)
+            response["Access-Control-Allow-Credentials"] = "true"
+            return response
         except Exception as e:
             print(f"Error connecting Discord account: {str(e)}")
             return Response({'error': 'Failed to connect Discord account'}, 
@@ -440,8 +453,10 @@ class ConnectGoogleView(APIView, IsUserAuthenticatedPermissionMixin):
                     }
                 )
                 
-                return Response({'success': 'Google account connected successfully'}, 
+                response = Response({'success': 'Google account connected successfully'}, 
                                 status=status.HTTP_200_OK)
+                response["Access-Control-Allow-Credentials"] = "true"
+                return response
             except ValueError as e:
                 return Response({'error': 'Invalid Google credential'}, 
                                 status=status.HTTP_400_BAD_REQUEST)
