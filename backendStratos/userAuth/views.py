@@ -323,7 +323,7 @@ class LoginView(APIView):
 
             if user is not None:
                 auth.login(request, user)
-                return Response({'success': 'User authenticated', 'username': username})
+                return Response({'success': 'User authenticated', 'username': username, 'isEmailVerified': user.is_email_verified})
             else:
                 return Response({'error': 'Error authenticating'})
         except Exception as e:
