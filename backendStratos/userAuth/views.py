@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework.response import Response
 from django.contrib.auth.models import User
-from userModule.models import StratosUser
+from userModule.models import StratosUser, UserType
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from rest_framework import authentication
 from django.contrib import auth  # Add this import for login/logout functionality
@@ -24,6 +24,22 @@ import io
 
 # Set up logging
 logger = logging.getLogger(__name__)
+
+def validate_user_types(user_types):
+    """Validate user types against available choices"""
+    if not isinstance(user_types, list):
+        return False, "User types must be a list"
+    
+    if not user_types:
+        return False, "At least one user type must be selected"
+    
+    valid_types = [choice[0] for choice in UserType.USER_TYPE_CHOICES]
+    invalid_types = [ut for ut in user_types if ut not in valid_types]
+    
+    if invalid_types:
+        return False, f"Invalid user types: {', '.join(invalid_types)}"
+    
+    return True, None
 
 @method_decorator(csrf_protect, name='dispatch')
 class CheckAuthenticatedView(APIView):
@@ -225,6 +241,12 @@ class SingupView(APIView):
         password = data['password']
         re_password = data['re_password']
         email = data.get('email', '')  # Get email with empty default if not provided
+        user_types = data.get('user_types', [])  # Get user types with empty list default
+
+        # Validate user types
+        is_valid, error_message = validate_user_types(user_types)
+        if not is_valid:
+            return Response({'error': error_message}, status=400)
 
         if password == re_password:
             # Check username uniqueness
@@ -246,8 +268,23 @@ class SingupView(APIView):
                 )
                 user.save()
                 user = User.objects.get(id=user.id)
-                user_profile = StratosUser(user=user, phone='', address='', city='', state='', country='', zip='')
+                
+                # Create user profile
+                user_profile = StratosUser(
+                    user=user, 
+                    phone='', 
+                    address='', 
+                    city='', 
+                    state='', 
+                    country='', 
+                    zip=''
+                )
                 user_profile.save()
+                
+                # Add user types
+                for user_type in user_types:
+                    type_obj, created = UserType.objects.get_or_create(type=user_type)
+                    user_profile.user_types.add(type_obj)
                 
                 # Log the user in after successful registration
                 auth.login(request, user)
@@ -261,7 +298,8 @@ class SingupView(APIView):
                         'username': user.username,
                         'email': user.email,
                         'id': user.id,
-                        'isEmailVerified': user_profile.isEmailVerified
+                        'isEmailVerified': user_profile.isEmailVerified,
+                        'user_types': user_profile.get_user_types()
                     }
                 })
         else:
