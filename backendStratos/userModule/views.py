@@ -201,7 +201,7 @@ class GetSpecificUsers(APIView, IsUserVerifiedStratosPermissionMixin):
 
 @method_decorator(csrf_protect, name='dispatch')
 class DeleteUserAccount(APIView, IsUserAuthenticatedPermissionMixin):
-    """Delete user account - soft delete by deactivating the user"""
+    """Delete user account - hard delete the user"""
     
     def delete(self, request):
         try:
@@ -216,9 +216,9 @@ class DeleteUserAccount(APIView, IsUserAuthenticatedPermissionMixin):
                 if session_data.get('_auth_user_id') == str(user.pk):
                     session.delete()
             
-            # Deactivate user instead of hard delete
-            user.is_active = False
-            user.save()
+            # Delete the user correctly with the associated StratosUser
+            StratosUser.objects.get(user=user).delete()
+            user.delete()
             
             return Response({'success': 'Account deactivated successfully'}, 
                             status=status.HTTP_200_OK)
