@@ -66,10 +66,10 @@ class UpdateSelfInfo(APIView, IsUserVerifiedStratosPermissionMixin):
             
             # Update user fields with validation
             user.username = data.get('username', user.username)
-            user.first_name = data.get('first_name', user.first_name)
-            user.last_name = data.get('last_name', user.last_name)
+            user.first_name = data.get('name', user.first_name)
+            user.last_name = data.get('surname', user.last_name)
             user.email = data.get('email', user.email)
-            
+
             # Update StratosUser fields if provided
             if 'phone' in data:
                 stratos_user.phone = data.get('phone')
