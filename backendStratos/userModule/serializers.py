@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = StratosUser
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'phone', 'address', 'city', 'state', 'country', 'zip', 'user_types']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'isEmailVerified', 'phone', 'address', 'city', 'state', 'country', 'zip', 'user_types']
     
     def get_user_types(self, obj):
         return obj.get_user_types()
