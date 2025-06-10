@@ -3,15 +3,15 @@ from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework.response import Response
 from django.contrib.auth.models import User
-from userModule.models import StratosUser, UserType
+from userModule.models import StratosUser, UserType, PasswordResetToken
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from rest_framework import authentication
 from django.contrib import auth  # Add this import for login/logout functionality
 from django.utils.decorators import method_decorator
 from django.utils import timezone  # Add this import for timezone-aware datetime
-from datetime import datetime
-from backendStratos.utilities import checkForPasswordRequirements
-from backendStratos.mailServer import send_verification_email
+from datetime import datetime, timedelta
+from backendStratos.utilities import checkForPasswordRequirements, validate_password_requirements
+from backendStratos.mailServer import send_verification_email, send_password_reset_email, generate_reset_token
 from django.contrib.auth.tokens import default_token_generator
 from google.oauth2 import id_token
 from google.auth.transport import requests
@@ -21,6 +21,10 @@ import json
 import logging
 import gzip
 import io
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.contrib.auth.hashers import make_password
+from django.core.cache import cache
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -872,3 +876,186 @@ class DiscordSignupView(APIView):
         except Exception as e:
             logger.error(f"Error during Discord signup: {str(e)}")
             return Response({'error': 'Something went wrong during Discord signup'}, status=500)
+
+def get_rate_limit_key(prefix, identifier):
+    """Generate rate limit key for cache"""
+    return f"{prefix}:{identifier}"
+
+def check_rate_limit(key, limit, window_seconds):
+    """Check if rate limit has been exceeded"""
+    current_count = cache.get(key, 0)
+    return current_count >= limit
+
+def increment_rate_limit(key, window_seconds):
+    """Increment rate limit counter"""
+    current_count = cache.get(key, 0)
+    cache.set(key, current_count + 1, window_seconds)
+
+@method_decorator(csrf_protect, name='dispatch')
+class PasswordRecoveryRequestView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    
+    def post(self, request, format=None):
+        """Handle password recovery requests"""
+        logger.info("Password recovery request received")
+        data = self.request.data
+        
+        email = data.get('email', '').strip().lower()
+        
+        if not email:
+            return Response({'error': 'Email is required'}, status=400)
+        
+        # Validate email format
+        try:
+            validate_email(email)
+        except ValidationError:
+            return Response({'error': 'Invalid email format'}, status=400)
+        
+        # Rate limiting - 3 requests per email per hour
+        rate_limit_key = get_rate_limit_key('password_recovery', email)
+        if check_rate_limit(rate_limit_key, 3, 3600):  # 3 requests per hour
+            logger.warning(f"Rate limit exceeded for password recovery: {email}")
+            return Response({
+                'error': 'Too many password recovery requests. Please try again later.'
+            }, status=429)
+        
+        # Increment rate limit counter
+        increment_rate_limit(rate_limit_key, 3600)
+        
+        try:
+            # Always return success message to prevent email enumeration
+            success_response = {
+                'success': True,
+                'message': 'If an account with that email exists, we\'ve sent you a password reset link.'
+            }
+            
+            # Check if user exists
+            try:
+                user = User.objects.get(email=email)
+                logger.info(f"Password recovery requested for user: {user.username}")
+                
+                # Invalidate any existing unused tokens for this user
+                PasswordResetToken.objects.filter(
+                    user=user, 
+                    is_used=False
+                ).update(is_used=True)
+                
+                # Generate new reset token
+                reset_token = generate_reset_token()
+                
+                # Create password reset token record
+                token_record = PasswordResetToken.objects.create(
+                    user=user,
+                    token=reset_token,
+                    expires_at=timezone.now() + timedelta(hours=1)
+                )
+                
+                # Send password reset email
+                if send_password_reset_email(user, reset_token, request):
+                    logger.info(f"Password reset email sent successfully to {user.email}")
+                else:
+                    logger.error(f"Failed to send password reset email to {user.email}")
+                
+            except User.DoesNotExist:
+                logger.info(f"Password recovery requested for non-existent email: {email}")
+                # Still return success to prevent email enumeration
+                pass
+            
+            return Response(success_response)
+            
+        except Exception as e:
+            logger.error(f"Error during password recovery request: {str(e)}")
+            return Response({
+                'error': 'Something went wrong processing your request. Please try again.'
+            }, status=500)
+
+@method_decorator(csrf_protect, name='dispatch')
+class PasswordResetView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    
+    def post(self, request, format=None):
+        """Handle password reset with token"""
+        logger.info("Password reset attempt")
+        data = self.request.data
+        
+        user_id = data.get('user_id')
+        user_token = data.get('user_token', '').strip()
+        new_password = data.get('new_password')
+        
+        # Validate required parameters
+        if not all([user_id, user_token, new_password]):
+            return Response({
+                'error': 'Missing required parameters: user_id, user_token, and new_password are required'
+            }, status=400)
+        
+        # Rate limiting - 5 attempts per token
+        rate_limit_key = get_rate_limit_key('password_reset', user_token)
+        if check_rate_limit(rate_limit_key, 5, 3600):  # 5 attempts per hour
+            logger.warning(f"Rate limit exceeded for password reset token: {user_token[:10]}...")
+            return Response({
+                'error': 'Too many password reset attempts. Please request a new reset link.'
+            }, status=429)
+        
+        # Increment rate limit counter
+        increment_rate_limit(rate_limit_key, 3600)
+        
+        try:
+            # Validate user exists
+            try:
+                user = User.objects.get(pk=user_id)
+            except User.DoesNotExist:
+                logger.warning(f"Password reset attempted with invalid user_id: {user_id}")
+                return Response({'error': 'Invalid reset link'}, status=404)
+            
+            # Validate token
+            try:
+                token_record = PasswordResetToken.objects.get(
+                    user=user,
+                    token=user_token,
+                    is_used=False
+                )
+            except PasswordResetToken.DoesNotExist:
+                logger.warning(f"Password reset attempted with invalid token for user: {user.username}")
+                return Response({'error': 'Invalid or expired reset link'}, status=404)
+            
+            # Check if token has expired
+            if token_record.is_expired():
+                logger.warning(f"Password reset attempted with expired token for user: {user.username}")
+                token_record.is_used = True
+                token_record.save()
+                return Response({'error': 'Reset link has expired. Please request a new one.'}, status=410)
+            
+            # Validate new password
+            is_valid, password_errors = validate_password_requirements(new_password)
+            if not is_valid:
+                return Response({
+                    'error': 'Password does not meet requirements',
+                    'password_errors': password_errors
+                }, status=400)
+            
+            # Update user's password
+            user.set_password(new_password)
+            user.save()
+            
+            # Mark token as used
+            token_record.is_used = True
+            token_record.save()
+            
+            # Invalidate any other unused tokens for this user
+            PasswordResetToken.objects.filter(
+                user=user,
+                is_used=False
+            ).update(is_used=True)
+            
+            logger.info(f"Password successfully reset for user: {user.username}")
+            
+            return Response({
+                'success': True,
+                'message': 'Password has been successfully reset. You can now log in with your new password.'
+            })
+            
+        except Exception as e:
+            logger.error(f"Error during password reset: {str(e)}")
+            return Response({
+                'error': 'Something went wrong processing your request. Please try again.'
+            }, status=500)

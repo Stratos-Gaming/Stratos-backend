@@ -2,7 +2,8 @@ from django.urls import path, include
 from .views import (
     SingupView, GetCSRFToken, LoginView, LogoutView, CheckAuthenticatedView, 
     VerifyEmailView, GoogleLoginView, GoogleSignupView, DiscordLoginView, DiscordSignupView,
-    DiscordLinkView, DiscordUnlinkView, ResendVerificationEmailView
+    DiscordLinkView, DiscordUnlinkView, ResendVerificationEmailView, PasswordRecoveryRequestView,
+    PasswordResetView
 )
 
 urlpatterns = [
@@ -19,4 +20,6 @@ urlpatterns = [
     path('discord/signup/', DiscordSignupView.as_view(), name='discord_signup'),  # POST /auth/discord/signup/
     path('discord/link/', DiscordLinkView.as_view(), name='discord_link'),  # POST /auth/discord/link/
     path('discord/unlink/', DiscordUnlinkView.as_view(), name='discord_unlink'),  # POST /auth/discord/unlink/
+    path('recover-password/', PasswordRecoveryRequestView.as_view(), name='password_recovery_request'),  # POST /auth/recover-password/
+    path('reset-password/', PasswordResetView.as_view(), name='password_reset'),  # POST /auth/reset-password/
 ]

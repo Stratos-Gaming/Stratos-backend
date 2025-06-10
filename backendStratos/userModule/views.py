@@ -13,6 +13,8 @@ from django.conf import settings
 from django.views.decorators.http import require_http_methods
 from django.middleware.csrf import get_token
 from django.contrib.auth import logout
+from backendStratos.mailServer import send_verification_email
+
 class GetSelfInfo(APIView, IsUserAuthenticatedPermissionMixin): 
 
     def get(self, request):
@@ -23,6 +25,7 @@ class GetSelfInfo(APIView, IsUserAuthenticatedPermissionMixin):
             # Get the StratosUser instance associated with this User
             stratos_user = StratosUser.objects.get(user=request.user)
             user_info = UserSerializer(stratos_user).data
+
             return Response(user_info, status=status.HTTP_200_OK)
         except StratosUser.DoesNotExist:
             return Response(
@@ -62,6 +65,12 @@ class UpdateSelfInfo(APIView, IsUserVerifiedStratosPermissionMixin):
                     return Response({'error': 'Email cannot be empty'}, status=status.HTTP_400_BAD_REQUEST)
                 if User.objects.filter(email=data['email']).exclude(pk=user.pk).exists():
                     return Response({'error': 'Email is already in use'}, status=status.HTTP_400_BAD_REQUEST)
+                if stratos_user.isEmailVerified:
+                    # set to the db email not verified
+                    stratos_user.isEmailVerified = False
+                    stratos_user.save()
+                    # send verification email
+                    send_verification_email(user, request)
             
             # Validate name if provided
             if 'first_name' in data:
