@@ -26,11 +26,8 @@ def send_verification_email(user, request):
         token = default_token_generator.make_token(user)
         uid = user.pk
         # Construct a URL for email verification
-        verify_url = request.build_absolute_uri(
-            reverse('verify-email', kwargs={'uid': uid, 'token': token})
-        )
-        
-        subject = 'Verify your email'
+        verify_url = f"https://development.stratosgaming.com/auth/verify-email/{uid}/{token}/"
+        subject = 'Stratos - Verify your email'
         message = f'Please click the link to verify your email: {verify_url}'
         print(f"Verification link: {verify_url}, user: {user}, email: {user.email}")
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])

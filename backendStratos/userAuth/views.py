@@ -307,7 +307,26 @@ class SingupView(APIView):
                 })
         else:
             return Response({'error': 'Passwords do not match'})
-        
+
+@method_decorator(csrf_protect, name='dispatch')
+class ResendVerificationEmailView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def post(self, request, format=None):
+        try:
+            user = request.user
+            stratos_user = StratosUser.objects.get(user=user)
+            if not stratos_user.isEmailVerified:
+                if send_verification_email(user, request):
+                    return Response({'success': 'Verification email sent successfully'})
+                else:
+                    return Response({'error': 'Failed to send verification email'}, status=400)
+            else:
+                return Response({'error': 'Email already verified'}, status=400)
+        except Exception as e:
+            logger.error(f"Error sending verification email: {str(e)}")
+            return Response({'error': 'Something went wrong sending verification email'}, status=500)
+
 @method_decorator(csrf_protect, name='dispatch')
 class LoginView(APIView):
     permission_classes = (permissions.AllowAny,)
