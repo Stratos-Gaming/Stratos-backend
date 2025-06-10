@@ -180,10 +180,6 @@ def send_password_reset_email(user, reset_token, request):
                             <tr>
                                 <td bgcolor="#ffffff" class="padding" style="padding:60px 40px; font-family:'Mazzard Soft', 'Helvetica Neue', Helvetica, Arial, sans-serif; color:#333333; text-align: center;">
                                     
-                                    <h1 style="color:#1B74E4; font-size:48px; font-weight:500; margin:0 0 20px 0; text-align:center;">
-                                        🔒 Password Reset
-                                    </h1>
-                                    
                                     <p style="font-size:28px; font-weight:300; margin:20px 0; text-align:center;">
                                         Hello <strong style="color:#1B74E4;">{user.username}</strong>,
                                     </p>
