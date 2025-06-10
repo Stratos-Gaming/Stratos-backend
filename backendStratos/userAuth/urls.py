@@ -2,7 +2,7 @@ from django.urls import path, include
 from .views import (
     SingupView, GetCSRFToken, LoginView, LogoutView, CheckAuthenticatedView, 
     VerifyEmailView, GoogleLoginView, GoogleSignupView, DiscordLoginView, DiscordSignupView,
-    DiscordLinkView, DiscordUnlinkView
+    DiscordLinkView, DiscordUnlinkView, ResendVerificationEmailView
 )
 
 urlpatterns = [
@@ -12,6 +12,7 @@ urlpatterns = [
     path('register/', SingupView.as_view(), name='signup'),  # POST /login/register/
     path('csrf_cookie', GetCSRFToken.as_view(), name='csrf'),  # GET /login/csrf_cookie
     path('verify-email/<int:uid>/<str:token>/', VerifyEmailView.as_view(), name='verify-email'),
+    path('resend-verification-email/', ResendVerificationEmailView.as_view(), name='resend-verification-email'),
     path('google/', GoogleLoginView.as_view(), name='google_login'),  # POST /auth/google/
     path('google/signup/', GoogleSignupView.as_view(), name='google_signup'),  # POST /auth/google/signup/
     path('discord/', DiscordLoginView.as_view(), name='discord_login'),  # POST /auth/discord/
