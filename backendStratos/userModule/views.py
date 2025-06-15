@@ -14,6 +14,12 @@ from django.views.decorators.http import require_http_methods
 from django.middleware.csrf import get_token
 from django.contrib.auth import logout
 from backendStratos.mailServer import send_verification_email
+from PIL import Image
+import io
+import os
+import requests
+from django.core.files.base import ContentFile
+from django.core.files.uploadedfile import InMemoryUploadedFile
 
 class GetSelfInfo(APIView, IsUserAuthenticatedPermissionMixin): 
 
@@ -149,10 +155,14 @@ class UpdateSelfPassword(APIView, IsUserAuthenticatedPermissionMixin):
                 return Response({'error': 'Password fields cannot be empty'}, 
                                 status=status.HTTP_400_BAD_REQUEST)
                 
-            # if new password has minimum requirements
-            if len(new_password) < 8:
-                return Response({'error': 'Password must be at least 8 characters long'}, 
-                                status=status.HTTP_400_BAD_REQUEST)
+            # Validate new password requirements
+            from backendStratos.utilities import validate_password_requirements
+            is_valid, password_errors = validate_password_requirements(new_password)
+            if not is_valid:
+                return Response({
+                    'error': 'New password does not meet requirements',
+                    'password_errors': password_errors
+                }, status=status.HTTP_400_BAD_REQUEST)
             
             # Check if new password is different from the old one
             if old_password == new_password:
@@ -179,6 +189,86 @@ class UpdateSelfPassword(APIView, IsUserAuthenticatedPermissionMixin):
         except Exception as e:
             print(f"Error updating user password: {str(e)}")
             return Response({'error': 'Failed to update password'}, 
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@method_decorator(csrf_protect, name='dispatch')
+class UpdateProfilePicture(APIView, IsUserAuthenticatedPermissionMixin):
+    """Upload and update user profile picture"""
+    
+    def post(self, request):
+        try:
+            # Check if image file is provided
+            if 'profile_picture' not in request.FILES:
+                return Response({'error': 'No image file provided'}, 
+                                status=status.HTTP_400_BAD_REQUEST)
+            
+            image_file = request.FILES['profile_picture']
+            
+            # Validate file size (max 5MB)
+            if image_file.size > 5 * 1024 * 1024:
+                return Response({'error': 'Image file size must be less than 5MB'}, 
+                                status=status.HTTP_400_BAD_REQUEST)
+            
+            # Get StratosUser instance
+            stratos_user = StratosUser.objects.get(user=request.user)
+            
+            # Process the image
+            try:
+                # Open the image
+                img = Image.open(image_file)
+                
+                # Convert to RGB if necessary (for PNG with transparency)
+                if img.mode != 'RGB':
+                    rgb_img = Image.new('RGB', img.size, (255, 255, 255))
+                    rgb_img.paste(img, mask=img.split()[3] if img.mode == 'RGBA' else None)
+                    img = rgb_img
+                
+                # Resize to 64x64 while maintaining aspect ratio
+                img.thumbnail((64, 64), Image.Resampling.LANCZOS)
+                
+                # Create a square image with white background
+                square_img = Image.new('RGB', (64, 64), (255, 255, 255))
+                # Paste the resized image centered
+                x = (64 - img.width) // 2
+                y = (64 - img.height) // 2
+                square_img.paste(img, (x, y))
+                
+                # Save as WebP
+                output = io.BytesIO()
+                square_img.save(output, format='WEBP', quality=85)
+                output.seek(0)
+                
+                # Create a new file name
+                file_name = f"profile_{request.user.id}.webp"
+                
+                # Delete old profile picture if exists
+                if stratos_user.profile_picture:
+                    if os.path.isfile(stratos_user.profile_picture.path):
+                        os.remove(stratos_user.profile_picture.path)
+                
+                # Save the new profile picture
+                stratos_user.profile_picture.save(
+                    file_name,
+                    ContentFile(output.read()),
+                    save=True
+                )
+                
+                # Return updated user info
+                user_info = UserSerializer(stratos_user).data
+                return Response(user_info, status=status.HTTP_200_OK)
+                
+            except Exception as e:
+                print(f"Error processing image: {str(e)}")
+                return Response({'error': 'Failed to process image'}, 
+                                status=status.HTTP_400_BAD_REQUEST)
+            
+        except StratosUser.DoesNotExist:
+            return Response({'error': 'User profile not found'}, 
+                            status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            print(f"Error updating profile picture: {str(e)}")
+            return Response({'error': 'Failed to update profile picture'}, 
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -412,6 +502,38 @@ class ConnectDiscordView(APIView, IsUserAuthenticatedPermissionMixin):
             stratos_user.discord_global_name = discord_data.get('global_name', '')
             stratos_user.discord_avatar = discord_data.get('avatar', '')
             stratos_user.discord_discriminator = discord_data.get('discriminator', '')
+            
+            # Download and save Discord avatar as profile picture if not already set
+            if discord_data.get('avatar') and not stratos_user.profile_picture:
+                try:
+                    avatar_url = f"https://cdn.discordapp.com/avatars/{discord_data['id']}/{discord_data['avatar']}.png?size=64"
+                    response = requests.get(avatar_url)
+                    
+                    if response.status_code == 200:
+                        # Open and process the image
+                        img = Image.open(io.BytesIO(response.content))
+                        
+                        # Convert to RGB if necessary
+                        if img.mode != 'RGB':
+                            rgb_img = Image.new('RGB', img.size, (255, 255, 255))
+                            rgb_img.paste(img, mask=img.split()[3] if img.mode == 'RGBA' else None)
+                            img = rgb_img
+                        
+                        # Save as WebP
+                        output = io.BytesIO()
+                        img.save(output, format='WEBP', quality=85)
+                        output.seek(0)
+                        
+                        # Save the profile picture
+                        file_name = f"profile_{request.user.id}.webp"
+                        stratos_user.profile_picture.save(
+                            file_name,
+                            ContentFile(output.read()),
+                            save=False
+                        )
+                except Exception as e:
+                    print(f"Error downloading Discord avatar: {str(e)}")
+            
             stratos_user.save()
             
             # Create or update UserSocialConnection
@@ -471,6 +593,48 @@ class ConnectGoogleView(APIView, IsUserAuthenticatedPermissionMixin):
                 # Update StratosUser with Google info
                 stratos_user = StratosUser.objects.get(user=request.user)
                 stratos_user.google_id = idinfo['sub']
+                
+                # Download and save Google profile picture if not already set
+                if idinfo.get('picture') and not stratos_user.profile_picture:
+                    try:
+                        # Google picture URL usually already provides a small size
+                        picture_url = idinfo['picture']
+                        response = requests.get(picture_url)
+                        
+                        if response.status_code == 200:
+                            # Open and process the image
+                            img = Image.open(io.BytesIO(response.content))
+                            
+                            # Convert to RGB if necessary
+                            if img.mode != 'RGB':
+                                rgb_img = Image.new('RGB', img.size, (255, 255, 255))
+                                rgb_img.paste(img, mask=img.split()[3] if img.mode == 'RGBA' else None)
+                                img = rgb_img
+                            
+                            # Resize to 64x64
+                            img.thumbnail((64, 64), Image.Resampling.LANCZOS)
+                            
+                            # Create a square image
+                            square_img = Image.new('RGB', (64, 64), (255, 255, 255))
+                            x = (64 - img.width) // 2
+                            y = (64 - img.height) // 2
+                            square_img.paste(img, (x, y))
+                            
+                            # Save as WebP
+                            output = io.BytesIO()
+                            square_img.save(output, format='WEBP', quality=85)
+                            output.seek(0)
+                            
+                            # Save the profile picture
+                            file_name = f"profile_{request.user.id}.webp"
+                            stratos_user.profile_picture.save(
+                                file_name,
+                                ContentFile(output.read()),
+                                save=False
+                            )
+                    except Exception as e:
+                        print(f"Error downloading Google profile picture: {str(e)}")
+                
                 stratos_user.save()
                 
                 # Create or update UserSocialConnection

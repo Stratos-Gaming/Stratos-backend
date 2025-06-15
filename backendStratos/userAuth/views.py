@@ -262,8 +262,13 @@ class SingupView(APIView):
             if email and User.objects.filter(email=email).exists():
                 return Response({'error': 'Email already exists'})
             
-            if checkForPasswordRequirements(password) == False:
-                return Response({'error': 'Password does not have all the requirements'})
+            # Validate password requirements
+            is_valid, password_errors = validate_password_requirements(password)
+            if not is_valid:
+                return Response({
+                    'error': 'Password does not meet requirements',
+                    'password_errors': password_errors
+                }, status=400)
             else:
                 user = User.objects.create_user(
                     username=username, 

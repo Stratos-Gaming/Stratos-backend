@@ -3,6 +3,9 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.utils import timezone
 from datetime import timedelta
+import os
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
 class UserType(models.Model):
     """Model to store user types"""
@@ -28,6 +31,14 @@ class StratosUser(models.Model):
     state = models.CharField(max_length=20)
     country = models.CharField(max_length=20)
     zip = models.CharField(max_length=10)
+    
+    # Profile picture
+    profile_picture = models.ImageField(
+        upload_to='profile_pictures/',
+        null=True,
+        blank=True,
+        help_text="User profile picture (64x64 webp)"
+    )
     
     # User types - many-to-many relationship
     user_types = models.ManyToManyField(UserType, related_name='users', blank=True)
@@ -66,8 +77,28 @@ class StratosUser(models.Model):
         """Get list of user types as strings"""
         return [ut.type for ut in self.user_types.all()]
     
+    def get_profile_picture_url(self):
+        """Get profile picture URL or default"""
+        if self.profile_picture:
+            return self.profile_picture.url
+        # Check for Discord avatar
+        elif self.discord_avatar and self.discord_id:
+            return f"https://cdn.discordapp.com/avatars/{self.discord_id}/{self.discord_avatar}.png"
+        # Default avatar
+        else:
+            return f"{settings.STATIC_URL}images/Avatar.png"
+    
     def __str__(self):
         return self.user.username  # Access username through the related User model
+
+
+# Signal to delete profile picture when StratosUser is deleted
+@receiver(post_delete, sender=StratosUser)
+def delete_profile_picture(sender, instance, **kwargs):
+    """Delete profile picture file when StratosUser is deleted"""
+    if instance.profile_picture:
+        if os.path.isfile(instance.profile_picture.path):
+            os.remove(instance.profile_picture.path)
 
 
 class UserSubscriptionPreferences(models.Model):

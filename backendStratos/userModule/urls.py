@@ -4,7 +4,8 @@ from .views import (
     GetSelfInfo, UpdateSelfInfo, UpdateSelfPassword, GetSpecificUsers,
     DeleteUserAccount, UserSubscriptionPreferencesView, UnsubscribeAllView,
     SocialConnectionsView, ConnectDiscordView, ConnectGoogleView,
-    DisconnectDiscordView, DisconnectGoogleView, DeleteAllUserDataView
+    DisconnectDiscordView, DisconnectGoogleView, DeleteAllUserDataView,
+    UpdateProfilePicture
 )
 
 app_name = 'userModule'
@@ -14,6 +15,7 @@ urlpatterns = [
     path('', GetSelfInfo.as_view(), name='get-self-info'),
     path('update/', UpdateSelfInfo.as_view(), name='update-self-info'),
     path('change-password/', UpdateSelfPassword.as_view(), name='update-self-password'),
+    path('update-profile-picture/', UpdateProfilePicture.as_view(), name='update-profile-picture'),
     path('delete/', DeleteUserAccount.as_view(), name='delete-user-account'),
     
     # Subscription APIs
