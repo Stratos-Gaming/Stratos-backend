@@ -29,19 +29,6 @@ from django.core.cache import cache
 # Set up logging
 logger = logging.getLogger(__name__)
 
-# Add a simple CORS test view
-class CORSTestView(APIView):
-    permission_classes = (permissions.AllowAny,)
-    
-    def get(self, request, format=None):
-        """Simple endpoint to test CORS configuration"""
-        return Response({
-            'status': 'ok',
-            'message': 'CORS test successful',
-            'origin': request.META.get('HTTP_ORIGIN', 'No origin'),
-            'host': request.META.get('HTTP_HOST', 'No host')
-        })
-
 def validate_user_types(user_types):
     """Validate user types against available choices"""
     if not isinstance(user_types, list):
@@ -394,40 +381,49 @@ class GetCSRFToken(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def get(self, request, format=None):
-        try:
-            from django.conf import settings
-            from django.middleware.csrf import get_token
-            
-            # Get the CSRF token
-            csrf_token = get_token(request)
-            
-            # Log the request details for debugging
-            logger.info(f"CSRF cookie request from: {request.META.get('HTTP_HOST', 'Unknown')}")
-            logger.info(f"Origin: {request.META.get('HTTP_ORIGIN', 'None')}")
-            
-            # Create response with minimal data to avoid errors
-            response = Response({
-                'success': 'CSRF cookie set',
-                'csrf_token': csrf_token
-            })
-            
-            # Set CSRF cookie with safe defaults
-            response.set_cookie(
-                'csrftoken',  # Use hardcoded name as fallback
-                csrf_token,
-                max_age=31449600,  # 1 year
-                path='/',
-                domain='.stratosgaming.com',
-                secure=True,
-                httponly=False,
-                samesite='None'
-            )
-            
-            return response
-        except Exception as e:
-            logger.error(f"Error in GetCSRFToken: {str(e)}", exc_info=True)
-            # Return a basic response even on error
-            return Response({'error': 'Failed to set CSRF cookie'}, status=500)
+        from django.conf import settings
+        from django.middleware.csrf import get_token
+        
+        # Get the CSRF token
+        csrf_token = get_token(request)
+        
+        # Log the request details for debugging
+        logger.info(f"CSRF cookie request from: {request.META.get('HTTP_HOST', 'Unknown')}")
+        logger.info(f"User-Agent: {request.META.get('HTTP_USER_AGENT', 'Unknown')}")
+        logger.info(f"Origin: {request.META.get('HTTP_ORIGIN', 'None')}")
+        logger.info(f"Referer: {request.META.get('HTTP_REFERER', 'None')}")
+        logger.info(f"Is secure: {request.is_secure()}")
+        logger.info(f"DEBUG mode: {settings.DEBUG}")
+        
+        # Create response
+        response = Response({
+            'success': 'CSRF cookie set',
+            'csrf_token': csrf_token,
+            'debug_info': {
+                'is_secure': request.is_secure(),
+                'host': request.META.get('HTTP_HOST'),
+                'csrf_cookie_secure': settings.CSRF_COOKIE_SECURE,
+                'csrf_cookie_domain': settings.CSRF_COOKIE_DOMAIN,
+                'csrf_cookie_path': getattr(settings, 'CSRF_COOKIE_PATH', '/'),
+                'csrf_cookie_samesite': settings.CSRF_COOKIE_SAMESITE,
+            } if settings.DEBUG else None
+        })
+        
+        # Explicitly set CSRF cookie with proper attributes
+        response.set_cookie(
+            settings.CSRF_COOKIE_NAME,
+            csrf_token,
+            max_age=settings.CSRF_COOKIE_AGE if hasattr(settings, 'CSRF_COOKIE_AGE') else None,
+            expires=None,
+            path=getattr(settings, 'CSRF_COOKIE_PATH', '/'),
+            domain=settings.CSRF_COOKIE_DOMAIN,
+            secure=settings.CSRF_COOKIE_SECURE,
+            httponly=settings.CSRF_COOKIE_HTTPONLY,
+            samesite=settings.CSRF_COOKIE_SAMESITE
+        )
+        
+        logger.info(f"CSRF cookie set with token: {csrf_token[:10]}...")
+        return response
 
 class VerifyEmailView(APIView):
     permission_classes = (permissions.AllowAny,)
