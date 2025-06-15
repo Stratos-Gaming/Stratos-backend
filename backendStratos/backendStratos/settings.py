@@ -119,9 +119,8 @@ INSTALLED_APPS = [
 
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # Must be as high as possible
     'django.middleware.common.CommonMiddleware',
-    'backendStratos.middleware.CORSMiddleware',  # Add our custom CORS middleware
-    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -236,7 +235,7 @@ REST_FRAMEWORK = {
 # CORS settings - Subdomain aware
 CORS_ALLOW_ALL_ORIGINS = False  # Use explicit allowed origins for security
 CORS_ALLOW_CREDENTIALS = True  # Required for cookies
-CORS_ORIGIN_ALLOW_ALL = False  # Use explicit allowed origins for security
+CORS_ORIGIN_ALLOW_ALL = False
 
 # Allow all subdomains of stratosgaming.com
 CORS_ALLOWED_ORIGINS = [
@@ -250,7 +249,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://api.stratosgaming.com',
     'https://stratosgaming.com',
     'https://www.stratosgaming.com',
-    'https://development.stratosgaming.com',  # Add development subdomain
+    'https://development.stratosgaming.com',
 ]
 
 # Add regex pattern to allow all stratosgaming.com subdomains
@@ -277,27 +276,18 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
-    'access-control-allow-origin',
-    'access-control-allow-headers',
-    'access-control-allow-methods',
 ]
 
 CORS_EXPOSE_HEADERS = [
     'Content-Type',
     'X-CSRFToken',
-    'Access-Control-Allow-Origin',
-    'Access-Control-Allow-Headers',
-    'Access-Control-Allow-Methods',
 ]
-
-# Remove CORS_REPLACE_HTTPS_REFERER as it's deprecated
-CORS_URLS_REGEX = r'^/.*$'
 
 # CSRF settings - Subdomain aware
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = True  # Always True for HTTPS
-CSRF_COOKIE_SAMESITE = 'Lax'  # Can use Lax for subdomains of same parent domain
+CSRF_COOKIE_SAMESITE = 'None'  # Changed to None to allow cross-origin requests
 CSRF_USE_SESSIONS = False
 CSRF_COOKIE_DOMAIN = '.stratosgaming.com'  # Set to parent domain to allow all subdomains
 CSRF_COOKIE_PATH = '/'  # Explicitly set path
@@ -306,7 +296,7 @@ CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 # Session cookie settings - Subdomain aware
 SESSION_COOKIE_SECURE = True  # Always True for HTTPS
 SESSION_COOKIE_HTTPONLY = True  # Keep session cookies HTTP-only for security
-SESSION_COOKIE_SAMESITE = 'Lax'  # Can use Lax for subdomains of same parent domain
+SESSION_COOKIE_SAMESITE = 'None'  # Changed to None to allow cross-origin requests
 SESSION_COOKIE_DOMAIN = '.stratosgaming.com'  # Set to parent domain to allow all subdomains
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 
