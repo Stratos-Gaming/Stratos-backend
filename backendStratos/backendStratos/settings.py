@@ -285,6 +285,7 @@ CORS_EXPOSE_HEADERS = [
 
 # CSRF settings - Subdomain aware
 CSRF_COOKIE_NAME = "csrftoken"
+CSRF_COOKIE_AGE = 31449600  # 1 year in seconds
 CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = True  # Always True for HTTPS
 CSRF_COOKIE_SAMESITE = 'None'  # Changed to None to allow cross-origin requests
