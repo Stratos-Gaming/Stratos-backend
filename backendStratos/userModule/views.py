@@ -71,7 +71,7 @@ class UpdateSelfInfo(APIView, IsUserVerifiedStratosPermissionMixin):
                     return Response({'error': 'Email cannot be empty'}, status=status.HTTP_400_BAD_REQUEST)
                 if User.objects.filter(email=data['email']).exclude(pk=user.pk).exists():
                     return Response({'error': 'Email is already in use'}, status=status.HTTP_400_BAD_REQUEST)
-                if stratos_user.isEmailVerified:
+                if stratos_user.isEmailVerified and data['email'] != user.email:
                     # set to the db email not verified
                     stratos_user.isEmailVerified = False
                     stratos_user.save()
