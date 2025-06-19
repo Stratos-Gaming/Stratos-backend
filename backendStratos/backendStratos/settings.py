@@ -300,7 +300,7 @@ CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = True  # Always True for HTTPS
 CSRF_COOKIE_SAMESITE = 'Lax'  # Can use Lax for subdomains of same parent domain
 CSRF_USE_SESSIONS = False
-CSRF_COOKIE_DOMAIN = '.stratosgaming.com'  # Set to parent domain to allow all subdomains
+CSRF_COOKIE_DOMAIN = '.stratosgaming.*'  # Set to parent domain to allow all subdomains
 CSRF_COOKIE_PATH = '/'  # Explicitly set path
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 
@@ -308,7 +308,7 @@ CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 SESSION_COOKIE_SECURE = True  # Always True for HTTPS
 SESSION_COOKIE_HTTPONLY = True  # Keep session cookies HTTP-only for security
 SESSION_COOKIE_SAMESITE = 'Lax'  # Can use Lax for subdomains of same parent domain
-SESSION_COOKIE_DOMAIN = '.stratosgaming.com'  # Set to parent domain to allow all subdomains
+SESSION_COOKIE_DOMAIN = '.stratosgaming.*'  # Set to parent domain to allow all subdomains
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 
 #EMAILS DATA
@@ -336,9 +336,13 @@ CSRF_TRUSTED_ORIGINS = [
     'https://stratosgaming.com',
     'https://www.stratosgaming.com',
     'https://development.stratosgaming.com',  # Add development subdomain
+    'https://stratosgaming.it',
+    'https://www.stratosgaming.it',
+    'https://development.stratosgaming.it',  # Add development subdomain
 ]
 
 # Add regex pattern to trust all stratosgaming.com subdomains
 CSRF_TRUSTED_ORIGIN_REGEXES = [
     r"^https?://([a-z0-9-]+\.)*stratosgaming\.com$",  # Trust all subdomains
+    r"^https?://([a-z0-9-]+\.)*stratosgaming\.it$",  # Trust all subdomains
 ]
