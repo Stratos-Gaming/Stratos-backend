@@ -252,6 +252,9 @@ CORS_ALLOWED_ORIGINS = [
     'https://stratosgaming.com',
     'https://www.stratosgaming.com',
     'https://development.stratosgaming.com',  # Add development subdomain
+    'https://stratosgaming.it',
+    'https://www.stratosgaming.it',
+    'https://development.stratosgaming.it',  # Add development subdomain
 ]
 
 # Add regex pattern to allow all stratosgaming.com subdomains
