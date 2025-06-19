@@ -303,7 +303,7 @@ CSRF_COOKIE_HTTPONLY = False
 CSRF_COOKIE_SECURE = True  # Always True for HTTPS
 CSRF_COOKIE_SAMESITE = 'Lax'  # Can use Lax for subdomains of same parent domain
 CSRF_USE_SESSIONS = False
-CSRF_COOKIE_DOMAIN = '.stratosgaming.*'  # Set to parent domain to allow all subdomains
+CSRF_COOKIE_DOMAIN = '.stratosgaming.com'  # Set to parent domain to allow all subdomains
 CSRF_COOKIE_PATH = '/'  # Explicitly set path
 CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 
@@ -311,7 +311,7 @@ CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
 SESSION_COOKIE_SECURE = True  # Always True for HTTPS
 SESSION_COOKIE_HTTPONLY = True  # Keep session cookies HTTP-only for security
 SESSION_COOKIE_SAMESITE = 'Lax'  # Can use Lax for subdomains of same parent domain
-SESSION_COOKIE_DOMAIN = '.stratosgaming.*'  # Set to parent domain to allow all subdomains
+SESSION_COOKIE_DOMAIN = '.stratosgaming.com'  # Set to parent domain to allow all subdomains
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 
 #EMAILS DATA
