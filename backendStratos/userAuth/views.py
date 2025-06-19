@@ -70,7 +70,9 @@ class CheckAuthenticatedView(APIView):
                     'id': user.id,
                     'isEmailVerified': stratos_user.isEmailVerified if stratos_user else False,
                     'google_id': stratos_user.google_id if stratos_user and stratos_user.google_id else None,
-                    'discord_id': stratos_user.discord_id if stratos_user and stratos_user.discord_id else None
+                    'discord_id': stratos_user.discord_id if stratos_user and stratos_user.discord_id else None,
+                    'user_types': stratos_user.get_user_types() if stratos_user else [],
+                    'profile_picture_url': stratos_user.get_profile_picture_url() if stratos_user else None
                 }
                 
                 # Add Discord profile information if available
@@ -92,7 +94,9 @@ class CheckAuthenticatedView(APIView):
                     'isEmailVerified': False,
                     'google_id': None,
                     'discord_id': None,
-                    'discord_profile': None
+                    'discord_profile': None,
+                    'user_types': [],
+                    'profile_picture_url': None
                 })
         except Exception as e:
             logger.error(f"Error checking authentication: {str(e)}")
