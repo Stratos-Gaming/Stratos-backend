@@ -1,0 +1,205 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stratos Gaming - Email Verification</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f8fa;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .logo {
+            max-width: 180px;
+            height: auto;
+        }
+        
+        .content {
+            padding: 30px 20px;
+            color: #333333;
+        }
+        
+        .greeting {
+            font-size: 24px;
+            color: #1a73e8;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .message {
+            font-size: 16px;
+            color: #444444;
+            margin-bottom: 25px;
+        }
+        
+        .verification-section {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .verify-button {
+            display: inline-block;
+            padding: 15px 40px;
+            background-color: #1a73e8;
+            color: white !important;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .verify-button:hover {
+            background-color: #0d47a1;
+        }
+        
+        .url-box {
+            background-color: #e8f0fe;
+            border: 1px solid #dadce0;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            word-break: break-all;
+            font-size: 14px;
+            color: #666666;
+        }
+        
+        .security-notice {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #856404;
+            font-size: 14px;
+        }
+        
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666666;
+            font-size: 14px;
+        }
+        
+        .social-links {
+            margin-top: 15px;
+        }
+        
+        .social-icon {
+            display: inline-block;
+            margin: 0 10px;
+        }
+        
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                width: 100%;
+                border-radius: 0;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+            
+            .verify-button {
+                padding: 12px 30px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <img src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/Logo_Vertical.png" alt="Stratos Gaming Logo" class="logo">
+        </div>
+        
+        <div class="content">
+            <h1 class="greeting">Welcome {{ username }}!</h1>
+            
+            <p class="message">
+                Thank you for joining Stratos Gaming. To complete your registration and start your gaming journey, please verify your email address.
+            </p>
+            
+            <div class="verification-section">
+                <h2 style="color: #1a73e8; margin-top: 0; margin-bottom: 20px;">Verify Your Email</h2>
+                <p style="margin-bottom: 25px;">Click the button below to verify your email address:</p>
+                <a href="{{ verify_url }}" class="verify-button">VERIFY EMAIL</a>
+            </div>
+            
+            <p style="font-size: 14px; color: #666666; text-align: center;">
+                Or copy and paste this link into your browser:
+            </p>
+            
+            <div class="url-box">
+                {{ verify_url }}
+            </div>
+            
+            <div class="security-notice">
+                <strong>Security Notice:</strong> This verification link will expire in 24 hours. If you didn't create an account with Stratos Gaming, please ignore this email.
+            </div>
+            
+            <p class="message">
+                Once verified, you'll have full access to:
+            </p>
+            
+            <ul style="color: #444444; margin-left: 20px;">
+                <li>Exclusive gaming tournaments</li>
+                <li>Community features and forums</li>
+                <li>Latest gaming news and updates</li>
+                <li>Special member rewards</li>
+            </ul>
+            
+            <p style="color: #1a73e8; font-weight: 500; margin-top: 30px;">
+                Welcome to the Stratos Gaming community!<br>
+                The Stratos Gaming Team
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2024 Stratos Gaming. All rights reserved.</p>
+            <p style="font-size: 12px; margin-top: 10px;">
+                This email was sent from an automated system. Please do not reply directly to this email.
+            </p>
+            <div class="social-links">
+                <a href="https://instagram.com/stratos_official" class="social-icon">
+                    <img src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Social_Insta.png" alt="Instagram" width="24">
+                </a>
+                <a href="https://linkedin.com/company/stratos-gaming" class="social-icon">
+                    <img src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Social_LinkedIn.png" alt="LinkedIn" width="24">
+                </a>
+                <a href="https://discord.gg/stratos" class="social-icon">
+                    <img src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/Social_Discord.png" alt="Discord" width="24">
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

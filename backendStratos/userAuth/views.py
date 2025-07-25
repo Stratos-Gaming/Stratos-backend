@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework import permissions
 from rest_framework.response import Response
 from django.contrib.auth.models import User
-from userModule.models import StratosUser, UserType, PasswordResetToken
+from userModule.models import StratosUser, UserType, PasswordResetToken, UserSubscriptionPreferences
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_protect
 from rest_framework import authentication
 from django.contrib import auth  # Add this import for login/logout functionality
@@ -252,6 +252,7 @@ class SingupView(APIView):
         user_types = data.get('user_types', [])  # Get user types with empty list default
         name = data.get('name', '')
         surname = data.get('surname', '')
+        newsletter = data.get('newsletter', False)
         # Validate user types
         is_valid, error_message = validate_user_types(user_types)
         if not is_valid:
@@ -307,6 +308,12 @@ class SingupView(APIView):
                 
                 if (email != ''):  # Send verification email if email provided
                     send_verification_email(user, request)
+        
+                #setup the user subscription preferences
+                user_subscription_preferences, created = UserSubscriptionPreferences.objects.get_or_create(user=user)
+                user_subscription_preferences.newsletter = newsletter
+                user_subscription_preferences.indie_projects_updates = newsletter
+                user_subscription_preferences.save()
                 
                 return Response({
                     'success': 'User created successfully',

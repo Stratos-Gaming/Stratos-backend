@@ -29,13 +29,43 @@ def send_verification_email(user, request):
     try:
         token = default_token_generator.make_token(user)
         uid = user.pk
+        
+        # Determine frontend URL based on environment
+        if settings.DEBUG:
+            frontend_base_url = "http://localhost:5173"
+        else:
+            frontend_base_url = "https://development.stratosgaming.com"
+        
         # Construct a URL for email verification
-        verify_url = f"https://development.stratosgaming.com/auth/verify-email/{uid}/{token}/"
-        subject = 'Stratos - Verify your email'
-        message = f'Please click the link to verify your email: {verify_url}'
-        print(f"Verification link: {verify_url}, user: {user}, email: {user.email}")
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+        verify_url = f"{frontend_base_url}/auth/verify-email/{uid}/{token}/"
+        
+        # Email subject
+        subject = 'Stratos Gaming - Verify Your Email'
+        
+        # Render HTML email
+        html_message = render_to_string('email/verification_email.html', {
+            'username': user.username,
+            'verify_url': verify_url,
+        })
+        
+        # Create plain text version
+        plain_message = strip_tags(html_message)
+        
+        # Send email with both HTML and plain text versions
+        from django.core.mail import EmailMultiAlternatives
+        
+        msg = EmailMultiAlternatives(
+            subject=subject,
+            body=plain_message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[user.email],
+        )
+        msg.attach_alternative(html_message, "text/html")
+        msg.send()
+        
+        print(f"Verification email sent to {user.email} for user {user.username}")
         return True
+        
     except Exception as e:
         # Log the error (you might want to use logger instead of print in production)
         print(f"Failed to send verification email: {e}")
