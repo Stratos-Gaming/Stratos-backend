@@ -194,7 +194,7 @@ def send_password_reset_email(user, reset_token, request):
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                         <tr>
                                             <td align="left" valign="middle">
-                                                <a href="https://stratosgaming.it" target="_blank" style="text-decoration:none;">
+                                                <a href="https://stratosgaming.com" target="_blank" style="text-decoration:none;">
                                                     <img src="https://stratos-email-assets.s3.eu-central-1.amazonaws.com/event-mail-assets/logo.png" alt="Stratos Logo" width="240" style="display:block; border:0;" />
                                                 </a>
                                             </td>

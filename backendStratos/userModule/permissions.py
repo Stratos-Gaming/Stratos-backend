@@ -43,5 +43,3 @@ class IsAdminStratosUser(BasePermission_Stratos):
         """
         return request.user.is_authenticated and request.user.is_staff
 
-
-# You can add more custom permissions as needed

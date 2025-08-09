@@ -119,16 +119,15 @@ INSTALLED_APPS = [
 
 
 MIDDLEWARE = [
-    'django.middleware.common.CommonMiddleware',
-    'backendStratos.middleware.CORSMiddleware',  # Add our custom CORS middleware
-    "corsheaders.middleware.CorsMiddleware",
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'backendStratos.middleware.CSPMiddleware',
+    "corsheaders.middleware.CorsMiddleware",     # ← move to very top
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware", # keep if you use Django Admin
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "backendStratos.middleware.CSPMiddleware",
 ]
 
 ROOT_URLCONF = 'backendStratos.urls'
@@ -226,92 +225,63 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #accept all requests
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-    ],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_AUTHENTICATION_CLASSES": ["userAuth.auth0.Auth0JWTAuthentication"],  
 }
 
+AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "staging-stratos-t4f.eu.auth0.com")
+AUTH0_AUDIENCE = os.getenv("AUTH0_AUDIENCE", "https://api.stratosgaming.com")
+AUTH0_ISSUER = f"https://{AUTH0_DOMAIN}/"
+AUTH0_ALGORITHMS = ["RS256"]
+
 # CORS settings - Subdomain aware
-CORS_ALLOW_ALL_ORIGINS = False  # Use explicit allowed origins for security
-CORS_ALLOW_CREDENTIALS = True  # Required for cookies
-CORS_ORIGIN_ALLOW_ALL = False  # Use explicit allowed origins for security
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_CREDENTIALS = False
 
-# Allow all subdomains of stratosgaming.com
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:5173',
-    'http://localhost:5371',
-    'http://3.74.166.136:5371',
-    'http://3.74.166.136',
-    'http://127.0.0.1:5173',
-    'http://127.0.0.1:5371',
-    'https://dev.d2lv8dn21inij8.amplifyapp.com',
-    'https://api.stratosgaming.com',
-    'https://stratosgaming.com',
-    'https://www.stratosgaming.com',
-    'https://development.stratosgaming.com',  # Add development subdomain
-    'https://stratosgaming.it',
-    'https://www.stratosgaming.it',
-    'https://development.stratosgaming.it',  # Add development subdomain
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://dev.d2lv8dn21inij8.amplifyapp.com",
+    "https://stratosgaming.com",
+    "https://www.stratosgaming.com",
+    "https://development.stratosgaming.com",
 ]
 
-# Add regex pattern to allow all stratosgaming.com subdomains
 CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https?://([a-z0-9-]+\.)*stratosgaming\.com$",  # Allow all subdomains
-]
-
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
+    r"^https?://([a-z0-9-]+\.)*stratosgaming\.com$",
+    r"^https?://([a-z0-9-]+\.)*stratosgaming\.it$",
 ]
 
 CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-    'access-control-allow-origin',
-    'access-control-allow-headers',
-    'access-control-allow-methods',
+    "authorization",
+    "content-type",
+    "accept",
+    "origin",
+    "user-agent",
+    "x-requested-with",
+    "dnt",
+    "x-csrftoken",   # only needed if you still POST to Django admin, etc.
 ]
+CORS_EXPOSE_HEADERS = ["Content-Type"]
+CORS_URLS_REGEX = r"^/.*$"
 
-CORS_EXPOSE_HEADERS = [
-    'Content-Type',
-    'X-CSRFToken',
-    'Access-Control-Allow-Origin',
-    'Access-Control-Allow-Headers',
-    'Access-Control-Allow-Methods',
-]
-
-# Remove CORS_REPLACE_HTTPS_REFERER as it's deprecated
-CORS_URLS_REGEX = r'^/.*$'
 
 # CSRF settings - Subdomain aware
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_COOKIE_HTTPONLY = False
-CSRF_COOKIE_SECURE = True  # Always True for HTTPS
-CSRF_COOKIE_SAMESITE = 'Lax'  # Can use Lax for subdomains of same parent domain
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_USE_SESSIONS = False
-CSRF_COOKIE_DOMAIN = '.stratosgaming.com'  # Set to parent domain to allow all subdomains
-CSRF_COOKIE_PATH = '/'  # Explicitly set path
-CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
+# If you serve admin on *.com but also hit *.it, you can drop domain pinning:
+CSRF_COOKIE_DOMAIN = None
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "https://*.stratosgaming.com",
+]
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_DOMAIN = None
 
-# Session cookie settings - Subdomain aware
-SESSION_COOKIE_SECURE = True  # Always True for HTTPS
-SESSION_COOKIE_HTTPONLY = True  # Keep session cookies HTTP-only for security
-SESSION_COOKIE_SAMESITE = 'Lax'  # Can use Lax for subdomains of same parent domain
-SESSION_COOKIE_DOMAIN = '.stratosgaming.com'  # Set to parent domain to allow all subdomains
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 
 #EMAILS DATA
@@ -339,13 +309,9 @@ CSRF_TRUSTED_ORIGINS = [
     'https://stratosgaming.com',
     'https://www.stratosgaming.com',
     'https://development.stratosgaming.com',  # Add development subdomain
-    'https://stratosgaming.it',
-    'https://www.stratosgaming.it',
-    'https://development.stratosgaming.it',  # Add development subdomain
 ]
 
 # Add regex pattern to trust all stratosgaming.com subdomains
 CSRF_TRUSTED_ORIGIN_REGEXES = [
     r"^https?://([a-z0-9-]+\.)*stratosgaming\.com$",  # Trust all subdomains
-    r"^https?://([a-z0-9-]+\.)*stratosgaming\.it$",  # Trust all subdomains
 ]

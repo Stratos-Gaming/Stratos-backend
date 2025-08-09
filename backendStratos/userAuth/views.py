@@ -25,7 +25,7 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
-
+from .permission import RequireScopes
 # Set up logging
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,6 @@ def validate_user_types(user_types):
     
     return True, None
 
-@method_decorator(csrf_protect, name='dispatch')
 class CheckAuthenticatedView(APIView):
     permission_classes = (permissions.AllowAny,)
     
@@ -140,7 +139,7 @@ def verify_discord_token(access_token):
         headers = {
             'Authorization': f'Bearer {access_token.strip()}',  # Ensure no whitespace
             'Content-Type': 'application/json',
-            'User-Agent': 'Stratos/1.0 (https://stratosgaming.it, v1.0)',
+            'User-Agent': 'Stratos/1.0 (https://stratosgaming.com, v1.0)',
             'Accept': 'application/json',
             'Accept-Language': 'en-US,en;q=0.9',
             'Accept-Encoding': 'gzip, deflate, br',
@@ -238,7 +237,6 @@ def verify_discord_token(access_token):
         logger.error(f"Error verifying Discord token: {str(e)}", exc_info=True)
         return None
 
-@method_decorator(csrf_protect, name='dispatch')
 class SingupView(APIView):
     permission_classes = (permissions.AllowAny,)
 
@@ -328,7 +326,6 @@ class SingupView(APIView):
         else:
             return Response({'error': 'Passwords do not match'})
 
-@method_decorator(csrf_protect, name='dispatch')
 class ResendVerificationEmailView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -347,7 +344,6 @@ class ResendVerificationEmailView(APIView):
             logger.error(f"Error sending verification email: {str(e)}")
             return Response({'error': 'Something went wrong sending verification email'}, status=500)
 
-@method_decorator(csrf_protect, name='dispatch')
 class LoginView(APIView):
     permission_classes = (permissions.AllowAny,)
 
@@ -371,9 +367,10 @@ class LoginView(APIView):
             print(f"Error retrieving user info: {str(e)}")
             return Response({'error': 'Something went wrong authenticating'})
         
-@method_decorator(csrf_protect, name='dispatch')
 class LogoutView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = [RequireScopes]
+    RequireScopes.required_scopes = {"read:self"}
+
     def post(self, request, format=None):
         try:
             auth.logout(request)
@@ -452,7 +449,6 @@ class VerifyEmailView(APIView):
         else:
             return Response({'error': 'Invalid or expired token'}, status=400)
 
-@method_decorator(csrf_protect, name='dispatch')
 class GoogleLoginView(APIView):
     permission_classes = (permissions.AllowAny,)
     
@@ -512,7 +508,6 @@ class GoogleLoginView(APIView):
             logger.error(f"Error during Google login: {str(e)}")
             return Response({'error': 'Something went wrong during Google authentication'}, status=500)
 
-@method_decorator(csrf_protect, name='dispatch')
 class GoogleSignupView(APIView):
     permission_classes = (permissions.AllowAny,)
     
@@ -591,7 +586,6 @@ class GoogleSignupView(APIView):
             print(f"Error during Google signup: {str(e)}")
             return Response({'error': 'Something went wrong during Google signup'}, status=500)
 
-@method_decorator(csrf_protect, name='dispatch')
 class DiscordLoginView(APIView):
     permission_classes = (permissions.AllowAny,)
     
@@ -692,9 +686,10 @@ class DiscordLoginView(APIView):
             logger.error(f"Error during Discord login: {str(e)}")
             return Response({'error': 'Something went wrong during Discord authentication'}, status=500)
 
-@method_decorator(csrf_protect, name='dispatch')
 class DiscordLinkView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = [RequireScopes]
+    RequireScopes.required_scopes = {"read:self"}
+
     
     def post(self, request, format=None):
         """Link Discord account to existing authenticated user"""
@@ -749,9 +744,9 @@ class DiscordLinkView(APIView):
             logger.error(f"Error during Discord link: {str(e)}")
             return Response({'error': 'Something went wrong while linking Discord account'}, status=500)
 
-@method_decorator(csrf_protect, name='dispatch')
 class DiscordUnlinkView(APIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = [RequireScopes]
+    RequireScopes.required_scopes = {"read:self"}
     
     def post(self, request, format=None):
         """Unlink Discord account from authenticated user"""
@@ -781,7 +776,6 @@ class DiscordUnlinkView(APIView):
             logger.error(f"Error during Discord unlink: {str(e)}")
             return Response({'error': 'Something went wrong while unlinking Discord account'}, status=500)
 
-@method_decorator(csrf_protect, name='dispatch')
 class DiscordSignupView(APIView):
     permission_classes = (permissions.AllowAny,)
     
@@ -907,7 +901,6 @@ def increment_rate_limit(key, window_seconds):
     current_count = cache.get(key, 0)
     cache.set(key, current_count + 1, window_seconds)
 
-@method_decorator(csrf_protect, name='dispatch')
 class PasswordRecoveryRequestView(APIView):
     permission_classes = (permissions.AllowAny,)
     
@@ -985,7 +978,6 @@ class PasswordRecoveryRequestView(APIView):
                 'error': 'Something went wrong processing your request. Please try again.'
             }, status=500)
 
-@method_decorator(csrf_protect, name='dispatch')
 class PasswordResetView(APIView):
     permission_classes = (permissions.AllowAny,)
     

@@ -20,8 +20,11 @@ import os
 import requests
 from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import InMemoryUploadedFile
+from userAuth.permission import RequireScopes
 
 class GetSelfInfo(APIView, IsUserAuthenticatedPermissionMixin): 
+    permission_classes = [RequireScopes]
+    RequireScopes.required_scopes = {"read:self"}
 
     def get(self, request):
         print(f"User authenticated: {request.user.is_authenticated}")
@@ -48,7 +51,8 @@ class GetSelfInfo(APIView, IsUserAuthenticatedPermissionMixin):
         
 @method_decorator(csrf_protect, name='dispatch')
 class UpdateSelfInfo(APIView, IsUserVerifiedStratosPermissionMixin):
-
+    permission_classes = [RequireScopes]
+    RequireScopes.required_scopes = {"update:self"}
     def post(self, request):
         user = request.user
         data = request.data
@@ -135,7 +139,8 @@ class UpdateSelfInfo(APIView, IsUserVerifiedStratosPermissionMixin):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UpdateSelfPassword(APIView, IsUserAuthenticatedPermissionMixin):
-    
+    permission_classes = [RequireScopes]
+    RequireScopes.required_scopes = {"update:self"}
     def post(self, request):
         user = request.user
         data = request.data
@@ -195,7 +200,9 @@ class UpdateSelfPassword(APIView, IsUserAuthenticatedPermissionMixin):
 @method_decorator(csrf_protect, name='dispatch')
 class UpdateProfilePicture(APIView, IsUserAuthenticatedPermissionMixin):
     """Upload and update user profile picture"""
-    
+    permission_classes = [RequireScopes]
+    RequireScopes.required_scopes = {"read:self"}
+
     def post(self, request):
         try:
             # Check if image file is provided
