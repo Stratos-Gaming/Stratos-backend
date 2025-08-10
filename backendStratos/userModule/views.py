@@ -82,29 +82,11 @@ class UpdateSelfInfo(APIView, IsUserVerifiedStratosPermissionMixin):
                     # send verification email
                     send_verification_email(user, request)
             
-            # Validate name if provided
-            if 'first_name' in data:
-                first_name = data['first_name'].strip()
-                if not first_name:
-                    return Response({'error': 'First name cannot be empty'}, status=status.HTTP_400_BAD_REQUEST)
-                if len(first_name) > 150:  # Django's default max_length for first_name
-                    return Response({'error': 'First name is too long'}, status=status.HTTP_400_BAD_REQUEST)
-                user.first_name = first_name
-            
-            # Validate surname if provided
-            if 'last_name' in data:
-                last_name = data['last_name'].strip()
-                if not last_name:
-                    return Response({'error': 'Last name cannot be empty'}, status=status.HTTP_400_BAD_REQUEST)
-                if len(last_name) > 150:  # Django
-                    return Response({'error': 'Last name is too long'}, status=status.HTTP_400_BAD_REQUEST)
-                user.last_name = last_name
-            
-            # Update user fields with validation
-            user.username = data.get('username', user.username)
-            user.email = data.get('email', user.email)
-            user.first_name = data.get('name', user.first_name)
-            user.last_name = data.get('surname', user.last_name)
+            # Update user fields with validation (remove name/surname handling)
+            if 'username' in data:
+                user.username = data['username']
+            if 'email' in data:
+                user.email = data['email']
 
             # Update StratosUser fields if provided
             if 'phone' in data:
@@ -220,63 +202,42 @@ class UpdateProfilePicture(APIView, IsUserAuthenticatedPermissionMixin):
             # Get StratosUser instance
             stratos_user = StratosUser.objects.get(user=request.user)
             
-            # Process the image
+            # Open and process the image
             try:
-                # Open the image
-                img = Image.open(image_file)
+                image = Image.open(image_file)
+                image = image.convert('RGB')  # Ensure RGB mode
+                # Resize to 64x64
+                image = image.resize((64, 64))
                 
-                # Convert to RGB if necessary (for PNG with transparency)
-                if img.mode != 'RGB':
-                    rgb_img = Image.new('RGB', img.size, (255, 255, 255))
-                    rgb_img.paste(img, mask=img.split()[3] if img.mode == 'RGBA' else None)
-                    img = rgb_img
+                # Save to bytes buffer in WebP format
+                img_io = io.BytesIO()
+                image.save(img_io, format='WEBP', quality=80)
+                img_io.seek(0)
                 
-                # Resize to 64x64 while maintaining aspect ratio
-                img.thumbnail((64, 64), Image.Resampling.LANCZOS)
-                
-                # Create a square image with white background
-                square_img = Image.new('RGB', (64, 64), (255, 255, 255))
-                # Paste the resized image centered
-                x = (64 - img.width) // 2
-                y = (64 - img.height) // 2
-                square_img.paste(img, (x, y))
-                
-                # Save as WebP
-                output = io.BytesIO()
-                square_img.save(output, format='WEBP', quality=85)
-                output.seek(0)
-                
-                # Create a new file name
-                file_name = f"profile_{request.user.id}.webp"
-                
-                # Delete old profile picture if exists
-                if stratos_user.profile_picture:
-                    if os.path.isfile(stratos_user.profile_picture.path):
-                        os.remove(stratos_user.profile_picture.path)
-                
-                # Save the new profile picture
-                stratos_user.profile_picture.save(
-                    file_name,
-                    ContentFile(output.read()),
-                    save=True
+                # Create a new InMemoryUploadedFile for the processed image
+                processed_image = InMemoryUploadedFile(
+                    img_io,  # file
+                    None,  # field_name
+                    f"user_{request.user.id}_avatar.webp",  # file name
+                    'image/webp',  # content_type
+                    img_io.getbuffer().nbytes,  # size
+                    None  # charset
                 )
                 
-                # Return updated user info
-                user_info = UserSerializer(stratos_user).data
-                return Response(user_info, status=status.HTTP_200_OK)
+                # Save to model field
+                stratos_user.profile_picture.save(processed_image.name, processed_image)
+                stratos_user.save()
                 
+                return Response({'success': 'Profile picture updated successfully', 'profile_picture_url': stratos_user.get_profile_picture_url()}, 
+                                status=status.HTTP_200_OK)
             except Exception as e:
                 print(f"Error processing image: {str(e)}")
-                return Response({'error': 'Failed to process image'}, 
-                                status=status.HTTP_400_BAD_REQUEST)
-            
+                return Response({'error': 'Invalid image file'}, status=status.HTTP_400_BAD_REQUEST)
         except StratosUser.DoesNotExist:
-            return Response({'error': 'User profile not found'}, 
-                            status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'User profile not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             print(f"Error updating profile picture: {str(e)}")
-            return Response({'error': 'Failed to update profile picture'}, 
-                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'error': 'Failed to update profile picture'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class GetSpecificUsers(APIView, IsUserVerifiedStratosPermissionMixin):

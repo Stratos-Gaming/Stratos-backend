@@ -82,6 +82,23 @@ class Auth0JWTAuthentication(BaseAuthentication):
             user.email = email
             user.save(update_fields=["email"])
 
+        # Associate provider IDs (google/discord) based on sub claim
+        stratos_user, _ = StratosUser.objects.get_or_create(user=user)
+        sub_value = payload.get("sub", "")
+        # google
+        if sub_value.startswith("google-oauth2|"):
+            google_id = sub_value.split("|", 1)[1]
+            if google_id and stratos_user.google_id != google_id:
+                stratos_user.google_id = google_id
+                stratos_user.save(update_fields=["google_id"])
+        # discord (Auth0 social may yield oauth2|discord|<id> or similar)
+        if "discord" in sub_value:
+            parts = sub_value.split("|")
+            discord_id = parts[-1] if parts else None
+            if discord_id and stratos_user.discord_id != discord_id:
+                stratos_user.discord_id = discord_id
+                stratos_user.save(update_fields=["discord_id"])
+
         # Attach claims for scope checks
         request.auth = payload
         return user, payload
