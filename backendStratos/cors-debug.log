@@ -1,3 +1,94 @@
 [WARNING] 2025-08-09 17:56:20,176 log - Not Found: /auth/
 [WARNING] 2025-08-09 18:28:08,142 log - Forbidden (CSRF cookie not set.): /auth/register/
 [WARNING] 2025-08-09 18:45:00,281 log - Forbidden (CSRF cookie not set.): /auth/register/
+[WARNING] 2025-08-10 12:16:41,752 log - Not Found: /
+[WARNING] 2025-08-10 12:16:41,784 log - Not Found: /favicon.ico
+[WARNING] 2025-08-10 14:26:39,255 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:07:43,145 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:19:31,283 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:19:33,723 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:19:34,869 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:19:36,034 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:31:13,950 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:31:32,019 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:31:33,215 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:31:33,664 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:31:33,924 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:42:38,584 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:43:23,431 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:45:50,688 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:45:52,749 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:45:53,291 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:25,103 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:25,952 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:26,629 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:27,263 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:27,831 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:28,424 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:29,264 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:29,832 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:30,419 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:30,967 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:51,480 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:52,070 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:52,649 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:53,230 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:53,792 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:54,370 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:54,939 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:55,499 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:56,075 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:56,633 log - Forbidden: /user/
+[WARNING] 2025-08-10 15:59:57,171 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:07:40,131 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:26:55,237 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:30:56,396 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:31:48,595 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:31:55,243 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:32:18,535 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:32:18,537 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:33:10,874 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:33:18,412 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:33:18,430 log - Not Found: /static/rest_framework/css/bootstrap.min.css
+[WARNING] 2025-08-10 16:33:18,434 log - Not Found: /static/rest_framework/css/bootstrap-tweaks.css
+[WARNING] 2025-08-10 16:33:18,434 log - Not Found: /static/rest_framework/css/prettify.css
+[WARNING] 2025-08-10 16:33:18,435 log - Not Found: /static/rest_framework/css/default.css
+[WARNING] 2025-08-10 16:33:18,437 log - Not Found: /static/rest_framework/js/jquery-3.7.1.min.js
+[WARNING] 2025-08-10 16:33:18,438 log - Not Found: /static/rest_framework/js/ajax-form.js
+[WARNING] 2025-08-10 16:33:18,439 log - Not Found: /static/rest_framework/js/prettify-min.js
+[WARNING] 2025-08-10 16:33:18,440 log - Not Found: /static/rest_framework/js/bootstrap.min.js
+[WARNING] 2025-08-10 16:33:18,441 log - Not Found: /static/rest_framework/js/csrf.js
+[WARNING] 2025-08-10 16:33:18,441 log - Not Found: /static/rest_framework/js/default.js
+[WARNING] 2025-08-10 16:33:18,443 log - Not Found: /static/rest_framework/js/load-ajax-form.js
+[WARNING] 2025-08-10 16:33:18,460 log - Not Found: /favicon.ico
+[WARNING] 2025-08-10 16:34:33,677 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:35:09,086 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:35:30,951 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:36:55,234 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:37:32,894 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:37:42,386 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:38:14,666 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:39:31,464 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:40:53,352 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:41:57,290 log - Forbidden: /user/
+[WARNING] 2025-08-10 16:43:49,097 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 16:51:38,202 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 16:52:08,611 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 16:52:13,881 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:02:25,471 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:11:50,889 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:13:03,260 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:13:47,328 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:15:39,842 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:17:59,268 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:28:42,968 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:29:00,919 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:29:06,091 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:29:24,424 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:29:38,014 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:29:42,490 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:30:07,426 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:31:01,169 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:36:00,957 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:36:47,956 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-10 17:37:34,179 log - Not Found: /static/images/Avatar.png

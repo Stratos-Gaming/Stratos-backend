@@ -39,6 +39,13 @@ class StratosUser(models.Model):
         blank=True,
         help_text="User profile picture (64x64 webp)"
     )
+    # Auth0 picture URL (preferred over uploaded images)
+    auth0_picture_url = models.URLField(
+        max_length=500,
+        null=True,
+        blank=True,
+        help_text="Profile picture URL provided by Auth0"
+    )
     
     # User types - many-to-many relationship
     user_types = models.ManyToManyField(UserType, related_name='users', blank=True)
@@ -79,14 +86,11 @@ class StratosUser(models.Model):
     
     def get_profile_picture_url(self):
         """Get profile picture URL or default"""
-        if self.profile_picture:
-            return self.profile_picture.url
-        # Check for Discord avatar
-        elif self.discord_avatar and self.discord_id:
-            return f"https://cdn.discordapp.com/avatars/{self.discord_id}/{self.discord_avatar}.png"
-        # Default avatar
+        # Prefer Auth0-provided picture if available
+        if self.auth0_picture_url:
+            return self.auth0_picture_url
         else:
-            return f"{settings.STATIC_URL}images/Avatar.png"
+            return "https://cdn.discordapp.com/embed/avatars/0.png"
     
     def __str__(self):
         return self.user.username  # Access username through the related User model

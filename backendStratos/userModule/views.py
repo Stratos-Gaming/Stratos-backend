@@ -49,7 +49,7 @@ class GetSelfInfo(APIView, IsUserAuthenticatedPermissionMixin):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         
-@method_decorator(csrf_protect, name='dispatch')
+
 class UpdateSelfInfo(APIView, IsUserVerifiedStratosPermissionMixin):
     permission_classes = [RequireScopes]
     RequireScopes.required_scopes = {"update:self"}
@@ -179,7 +179,7 @@ class UpdateSelfPassword(APIView, IsUserAuthenticatedPermissionMixin):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@method_decorator(csrf_protect, name='dispatch')
+
 class UpdateProfilePicture(APIView, IsUserAuthenticatedPermissionMixin):
     """Upload and update user profile picture"""
     permission_classes = [RequireScopes]
@@ -283,7 +283,7 @@ class GetSpecificUsers(APIView, IsUserVerifiedStratosPermissionMixin):
             )
 
 
-@method_decorator(csrf_protect, name='dispatch')
+
 class DeleteUserAccount(APIView, IsUserAuthenticatedPermissionMixin):
     """Delete user account - hard delete the user"""
     
@@ -372,7 +372,7 @@ class UserSubscriptionPreferencesView(APIView, IsUserAuthenticatedPermissionMixi
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@method_decorator(csrf_protect, name='dispatch')
+
 class UnsubscribeAllView(APIView, IsUserAuthenticatedPermissionMixin):
     """Unsubscribe from all communications"""
     
@@ -439,7 +439,7 @@ class SocialConnectionsView(APIView, IsUserAuthenticatedPermissionMixin):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@method_decorator(csrf_protect, name='dispatch')
+
 class ConnectDiscordView(APIView, IsUserAuthenticatedPermissionMixin):
     """Connect Discord account"""
     
@@ -526,7 +526,7 @@ class ConnectDiscordView(APIView, IsUserAuthenticatedPermissionMixin):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@method_decorator(csrf_protect, name='dispatch')
+
 class ConnectGoogleView(APIView, IsUserAuthenticatedPermissionMixin):
     """Connect Google account"""
     
@@ -630,7 +630,7 @@ class ConnectGoogleView(APIView, IsUserAuthenticatedPermissionMixin):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@method_decorator(csrf_protect, name='dispatch')
+
 class DisconnectDiscordView(APIView, IsUserAuthenticatedPermissionMixin):
     """Disconnect Discord account"""
     
@@ -661,7 +661,7 @@ class DisconnectDiscordView(APIView, IsUserAuthenticatedPermissionMixin):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@method_decorator(csrf_protect, name='dispatch')
+
 class DisconnectGoogleView(APIView, IsUserAuthenticatedPermissionMixin):
     """Disconnect Google account"""
     
@@ -688,7 +688,7 @@ class DisconnectGoogleView(APIView, IsUserAuthenticatedPermissionMixin):
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@method_decorator(csrf_protect, name='dispatch')
+
 class DeleteAllUserDataView(APIView, IsUserAuthenticatedPermissionMixin):
     """Delete all user personal data (GDPR compliance)"""
     

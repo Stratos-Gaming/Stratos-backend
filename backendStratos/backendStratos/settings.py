@@ -167,10 +167,10 @@ WSGI_APPLICATION = 'backendStratos.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('DB_NAME', 'stratosDB'),
+        'NAME': os.environ.get('DB_NAME', 'postgres'),
         'USER': os.environ.get('DB_USER', 'postgres'),
-        'PASSWORD': 'Stratos123',
-        'HOST': 'stratosdb-aws.cha6kyqe6mav.eu-central-1.rds.amazonaws.com',  # Imposta 'db' come host di default
+        'PASSWORD': 'password',
+        'HOST': 'localhost',  # Imposta 'db' come host di default
         'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
@@ -229,10 +229,11 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ["userAuth.auth0.Auth0JWTAuthentication"],  
 }
 
-AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "staging-stratos-t4f.eu.auth0.com")
-AUTH0_AUDIENCE = os.getenv("AUTH0_AUDIENCE", "https://api.stratosgaming.com")
+AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "login.stratosgaming.it")
+AUTH0_AUDIENCE = os.getenv("AUTH0_AUDIENCE", "http://127.0.0.1:8000")
 AUTH0_ISSUER = f"https://{AUTH0_DOMAIN}/"
 AUTH0_ALGORITHMS = ["RS256"]
+AUTH0_CLIENT_IDS = [s.strip() for s in os.getenv("AUTH0_CLIENT_IDS", "").split(",") if s.strip()]
 
 # CORS settings - Subdomain aware
 CORS_ALLOW_ALL_ORIGINS = False
@@ -261,6 +262,7 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
     "dnt",
     "x-csrftoken",   # only needed if you still POST to Django admin, etc.
+    "x-id-token",
 ]
 CORS_EXPOSE_HEADERS = ["Content-Type"]
 CORS_URLS_REGEX = r"^/.*$"
@@ -315,3 +317,13 @@ CSRF_TRUSTED_ORIGINS = [
 CSRF_TRUSTED_ORIGIN_REGEXES = [
     r"^https?://([a-z0-9-]+\.)*stratosgaming\.com$",  # Trust all subdomains
 ]
+
+# settings.py
+AUTH0_NS = "https://stratosgaming.it/claims"
+AUTH0_EMAIL_CLAIM = f"{AUTH0_NS}/email"
+AUTH0_EMAIL_VERIFIED_CLAIM = f"{AUTH0_NS}/email_verified"
+AUTH0_NAME_CLAIM = f"{AUTH0_NS}/name"
+AUTH0_GIVEN_CLAIM = f"{AUTH0_NS}/given_name"
+AUTH0_FAMILY_CLAIM = f"{AUTH0_NS}/family_name"
+AUTH0_PICTURE_CLAIM = f"{AUTH0_NS}/picture"
+AUTH0_PERMS_CLAIM = f"{AUTH0_NS}/permissions"

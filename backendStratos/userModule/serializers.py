@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from .models import StratosUser, UserSubscriptionPreferences, UserSocialConnection
 
 class UserSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user.username')
+    username = serializers.SerializerMethodField()
     email = serializers.EmailField(source='user.email')
     user_types = serializers.SerializerMethodField()
     profile_picture_url = serializers.SerializerMethodField()
@@ -17,6 +17,21 @@ class UserSerializer(serializers.ModelSerializer):
     
     def get_profile_picture_url(self, obj):
         return obj.get_profile_picture_url()
+
+    def get_username(self, obj):
+        # Prefer email local-part if email exists
+        email = getattr(obj.user, 'email', None)
+        if email:
+            try:
+                return email.split('@')[0]
+            except Exception:
+                pass
+        # Then prefer display name from Discord / other
+        display = obj.get_display_name()
+        if display and not str(display).startswith('auth0|'):
+            return display
+        # Fallback to stored username (may be Auth0 sub)
+        return obj.user.username
 
 
 class UserSubscriptionPreferencesSerializer(serializers.ModelSerializer):
