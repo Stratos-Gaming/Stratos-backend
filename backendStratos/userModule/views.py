@@ -49,7 +49,6 @@ class GetSelfInfo(APIView, IsUserAuthenticatedPermissionMixin):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         
-
 class UpdateSelfInfo(APIView, IsUserVerifiedStratosPermissionMixin):
     permission_classes = [RequireScopes]
     RequireScopes.required_scopes = {"update:self"}
@@ -178,8 +177,6 @@ class UpdateSelfPassword(APIView, IsUserAuthenticatedPermissionMixin):
             return Response({'error': 'Failed to update password'}, 
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-
 class UpdateProfilePicture(APIView, IsUserAuthenticatedPermissionMixin):
     """Upload and update user profile picture"""
     permission_classes = [RequireScopes]
@@ -239,7 +236,6 @@ class UpdateProfilePicture(APIView, IsUserAuthenticatedPermissionMixin):
             print(f"Error updating profile picture: {str(e)}")
             return Response({'error': 'Failed to update profile picture'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
 class GetSpecificUsers(APIView, IsUserVerifiedStratosPermissionMixin):
     def post(self, request):
         try:
@@ -282,8 +278,6 @@ class GetSpecificUsers(APIView, IsUserVerifiedStratosPermissionMixin):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-
-
 class DeleteUserAccount(APIView, IsUserAuthenticatedPermissionMixin):
     """Delete user account - hard delete the user"""
     
@@ -316,7 +310,6 @@ class DeleteUserAccount(APIView, IsUserAuthenticatedPermissionMixin):
             print(f"Error deleting user account: {str(e)}")
             return Response({'error': 'Failed to delete account'}, 
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 class UserSubscriptionPreferencesView(APIView, IsUserAuthenticatedPermissionMixin):
     """Get and update user subscription preferences"""
@@ -371,8 +364,6 @@ class UserSubscriptionPreferencesView(APIView, IsUserAuthenticatedPermissionMixi
             return Response({'error': 'Failed to update subscription preferences'}, 
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-
 class UnsubscribeAllView(APIView, IsUserAuthenticatedPermissionMixin):
     """Unsubscribe from all communications"""
     
@@ -396,7 +387,6 @@ class UnsubscribeAllView(APIView, IsUserAuthenticatedPermissionMixin):
             print(f"Error unsubscribing from all: {str(e)}")
             return Response({'error': 'Failed to unsubscribe'}, 
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
 
 class SocialConnectionsView(APIView, IsUserAuthenticatedPermissionMixin):
     """Get connected social accounts"""
@@ -437,8 +427,6 @@ class SocialConnectionsView(APIView, IsUserAuthenticatedPermissionMixin):
             print(f"Error retrieving social connections: {str(e)}")
             return Response({'error': 'Failed to retrieve social connections'}, 
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 
 class ConnectDiscordView(APIView, IsUserAuthenticatedPermissionMixin):
     """Connect Discord account"""
@@ -524,8 +512,6 @@ class ConnectDiscordView(APIView, IsUserAuthenticatedPermissionMixin):
             print(f"Error connecting Discord account: {str(e)}")
             return Response({'error': 'Failed to connect Discord account'}, 
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 
 class ConnectGoogleView(APIView, IsUserAuthenticatedPermissionMixin):
     """Connect Google account"""
@@ -629,8 +615,6 @@ class ConnectGoogleView(APIView, IsUserAuthenticatedPermissionMixin):
             return Response({'error': 'Failed to connect Google account'}, 
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-
 class DisconnectDiscordView(APIView, IsUserAuthenticatedPermissionMixin):
     """Disconnect Discord account"""
     
@@ -660,8 +644,6 @@ class DisconnectDiscordView(APIView, IsUserAuthenticatedPermissionMixin):
             return Response({'error': 'Failed to disconnect Discord account'}, 
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-
 class DisconnectGoogleView(APIView, IsUserAuthenticatedPermissionMixin):
     """Disconnect Google account"""
     
@@ -686,8 +668,6 @@ class DisconnectGoogleView(APIView, IsUserAuthenticatedPermissionMixin):
             print(f"Error disconnecting Google account: {str(e)}")
             return Response({'error': 'Failed to disconnect Google account'}, 
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 
 class DeleteAllUserDataView(APIView, IsUserAuthenticatedPermissionMixin):
     """Delete all user personal data (GDPR compliance)"""

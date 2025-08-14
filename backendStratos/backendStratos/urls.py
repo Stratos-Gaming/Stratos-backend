@@ -70,7 +70,6 @@ urlpatterns = [
     path('debug/', debug_view, name='debug'),
     path('api-auth/', include('rest_framework.urls')),
     path('user/', include('userModule.urls')),
-    path('auth/', include('userAuth.urls')),
     path('projects/', include('projectsModule.urls')),
     path('notification/create-email/', send_notification, name='create_email'),
     # Mailing endpoints

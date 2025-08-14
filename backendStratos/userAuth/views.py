@@ -45,6 +45,7 @@ def validate_user_types(user_types):
     
     return True, None
 
+#OLD CHECK AUTHENTICATED VIEW
 class CheckAuthenticatedView(APIView):
     permission_classes = (permissions.AllowAny,)
     
@@ -101,7 +102,7 @@ class CheckAuthenticatedView(APIView):
             logger.error(f"Error checking authentication: {str(e)}")
             return Response({'error': 'something went wrong checking authentication status'})
 
-
+#OLD GOOGLE AUTH
 def verify_google_token(credential):
     try:
         # Verify the token
@@ -125,6 +126,7 @@ def verify_google_token(credential):
         logger.error(f"Google token verification failed: {str(e)}")
         return None
 
+#OLD DISCORD AUTH
 def verify_discord_token(access_token):
     """Verify Discord access token and get user info"""
     try:
@@ -237,6 +239,7 @@ def verify_discord_token(access_token):
         logger.error(f"Error verifying Discord token: {str(e)}", exc_info=True)
         return None
 
+#OLD SIGNUP VIEW
 class SingupView(APIView):
     permission_classes = (permissions.AllowAny,)
 
@@ -326,6 +329,7 @@ class SingupView(APIView):
         else:
             return Response({'error': 'Passwords do not match'})
 
+#OLD RESEND VERIFICATION EMAIL VIEW
 class ResendVerificationEmailView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
@@ -344,6 +348,7 @@ class ResendVerificationEmailView(APIView):
             logger.error(f"Error sending verification email: {str(e)}")
             return Response({'error': 'Something went wrong sending verification email'}, status=500)
 
+#OLD LOGIN VIEW
 class LoginView(APIView):
     permission_classes = (permissions.AllowAny,)
 
@@ -366,7 +371,7 @@ class LoginView(APIView):
             # Log the exception but don't expose details to client
             print(f"Error retrieving user info: {str(e)}")
             return Response({'error': 'Something went wrong authenticating'})
-        
+#OLD LOGOUT VIEW
 class LogoutView(APIView):
     permission_classes = [RequireScopes]
     RequireScopes.required_scopes = {"read:self"}
@@ -384,7 +389,6 @@ class LogoutView(APIView):
             print(f"Error during logout: {str(e)}")
             return Response({'error': 'Error logging out'})
 
-@method_decorator(ensure_csrf_cookie, name='dispatch')     
 class GetCSRFToken(APIView):
     permission_classes = (permissions.AllowAny,)
 
@@ -433,6 +437,7 @@ class GetCSRFToken(APIView):
         logger.info(f"CSRF cookie set with token: {csrf_token[:10]}...")
         return response
 
+#OLD VERIFY EMAIL VIEW
 class VerifyEmailView(APIView):
     permission_classes = (permissions.AllowAny,)
     
@@ -449,6 +454,7 @@ class VerifyEmailView(APIView):
         else:
             return Response({'error': 'Invalid or expired token'}, status=400)
 
+#OLD GOOGLE LOGIN VIEW
 class GoogleLoginView(APIView):
     permission_classes = (permissions.AllowAny,)
     
@@ -508,6 +514,7 @@ class GoogleLoginView(APIView):
             logger.error(f"Error during Google login: {str(e)}")
             return Response({'error': 'Something went wrong during Google authentication'}, status=500)
 
+#OLD GOOGLE SIGNUP VIEW
 class GoogleSignupView(APIView):
     permission_classes = (permissions.AllowAny,)
     
@@ -586,6 +593,7 @@ class GoogleSignupView(APIView):
             print(f"Error during Google signup: {str(e)}")
             return Response({'error': 'Something went wrong during Google signup'}, status=500)
 
+#OLD DISCORD LOGIN VIEW
 class DiscordLoginView(APIView):
     permission_classes = (permissions.AllowAny,)
     
@@ -686,6 +694,7 @@ class DiscordLoginView(APIView):
             logger.error(f"Error during Discord login: {str(e)}")
             return Response({'error': 'Something went wrong during Discord authentication'}, status=500)
 
+#OLD DISCORD LINK VIEW
 class DiscordLinkView(APIView):
     permission_classes = [RequireScopes]
     RequireScopes.required_scopes = {"read:self"}
@@ -744,6 +753,7 @@ class DiscordLinkView(APIView):
             logger.error(f"Error during Discord link: {str(e)}")
             return Response({'error': 'Something went wrong while linking Discord account'}, status=500)
 
+#OLD DISCORD UNLINK VIEW
 class DiscordUnlinkView(APIView):
     permission_classes = [RequireScopes]
     RequireScopes.required_scopes = {"read:self"}
@@ -776,6 +786,7 @@ class DiscordUnlinkView(APIView):
             logger.error(f"Error during Discord unlink: {str(e)}")
             return Response({'error': 'Something went wrong while unlinking Discord account'}, status=500)
 
+#OLD DISCORD SIGNUP VIEW
 class DiscordSignupView(APIView):
     permission_classes = (permissions.AllowAny,)
     
@@ -901,6 +912,7 @@ def increment_rate_limit(key, window_seconds):
     current_count = cache.get(key, 0)
     cache.set(key, current_count + 1, window_seconds)
 
+#OLD PASSWORD RECOVERY VIEW
 class PasswordRecoveryRequestView(APIView):
     permission_classes = (permissions.AllowAny,)
     
@@ -978,6 +990,7 @@ class PasswordRecoveryRequestView(APIView):
                 'error': 'Something went wrong processing your request. Please try again.'
             }, status=500)
 
+#OLD PASSWORD RESET VIEW
 class PasswordResetView(APIView):
     permission_classes = (permissions.AllowAny,)
     

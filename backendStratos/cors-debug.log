@@ -92,3 +92,7 @@
 [WARNING] 2025-08-10 17:36:00,957 log - Not Found: /static/images/Avatar.png
 [WARNING] 2025-08-10 17:36:47,956 log - Not Found: /static/images/Avatar.png
 [WARNING] 2025-08-10 17:37:34,179 log - Not Found: /static/images/Avatar.png
+[WARNING] 2025-08-11 16:12:54,216 log - Not Found: /user/
+[WARNING] 2025-08-11 16:39:40,571 log - Not Found: /user/
+[WARNING] 2025-08-11 16:58:51,995 log - Not Found: /
+[WARNING] 2025-08-11 16:58:52,073 log - Not Found: /favicon.ico
