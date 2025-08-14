@@ -229,8 +229,8 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ["userAuth.auth0.Auth0JWTAuthentication"],  
 }
 
-AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "login.stratosgaming.it")
-AUTH0_AUDIENCE = os.getenv("AUTH0_AUDIENCE", "http://127.0.0.1:8000")
+AUTH0_DOMAIN = os.getenv("AUTH0_DOMAIN", "dev-bye2jfyt8iz1nehc.us.auth0.com")
+AUTH0_AUDIENCE = os.getenv("AUTH0_AUDIENCE", "stratos-api-stg.stratosgaming.com")
 AUTH0_ISSUER = f"https://{AUTH0_DOMAIN}/"
 AUTH0_ALGORITHMS = ["RS256"]
 AUTH0_CLIENT_IDS = [s.strip() for s in os.getenv("AUTH0_CLIENT_IDS", "").split(",") if s.strip()]
