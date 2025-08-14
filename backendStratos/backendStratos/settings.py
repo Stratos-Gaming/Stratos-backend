@@ -167,10 +167,10 @@ WSGI_APPLICATION = 'backendStratos.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get('DB_NAME', 'database-1'),
-        'USER': os.environ.get('DB_USER', 'stratos'),
+        'NAME': os.environ.get('DB_NAME', 'stratosdb'),
+        'USER': os.environ.get('DB_USER', 'postgres'),
         'PASSWORD': os.environ.get('DB_PASSWORD', '*Stratos*2025'),
-        'HOST': os.environ.get('DB_HOST', 'database-1.cha6kyqe6mav.eu-central-1.rds.amazonaws.com'),  # Imposta 'db' come host di default
+        'HOST': os.environ.get('DB_HOST', 'stratos-platform-staging.cha6kyqe6mav.eu-central-1.rds.amazonaws.com'),  # Imposta 'db' come host di default
         'PORT': os.environ.get('DB_PORT', '5432'),
     }
 }
