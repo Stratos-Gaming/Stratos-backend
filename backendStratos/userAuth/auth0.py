@@ -141,7 +141,18 @@ class Auth0JWTAuthentication(BaseAuthentication):
         given          = c("given_name", "given_name") or ""
         family         = c("family_name", "family_name") or ""
         picture        = c("picture", "picture") or ""
-
+        try:
+            payload = jwt.decode(
+				token,
+				rsa_key,
+				algorithms=getattr(settings, "AUTH0_ALGORITHMS", ["RS256"]),
+				options={"verify_aud": False},
+				issuer=issuer,
+			)
+        except Exception as exc:
+            import logging
+            logging.getLogger("django.security").error(f"Auth0 decode error: {exc}", extra={"issuer": issuer})
+            raise exceptions.AuthenticationFailed(f"Token verification failed: {exc}")
         # JIT create/update Django user
         user, created = User.objects.get_or_create(
             username=sub,
