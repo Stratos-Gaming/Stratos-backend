@@ -30,7 +30,7 @@ import time
 import requests
 
 logger = logging.getLogger('corsheaders')  # Changed to corsheaders logger
-
+#CORS Debug Endpoint
 @csrf_exempt
 @require_http_methods(["GET", "POST", "OPTIONS"])
 def debug_view(request):
@@ -67,6 +67,8 @@ def debug_view(request):
     
     return response
 
+
+#debug for auth0
 @csrf_exempt
 @require_http_methods(["GET"]) 
 def auth0_health(request):
@@ -96,8 +98,6 @@ def auth0_health(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('debug/', debug_view, name='debug'),
-    path('auth0/whoami/', WhoAmI.as_view(), name='whoami'),
-    path('auth0/health/', auth0_health, name='auth0_health'),
     path('api-auth/', include('rest_framework.urls')),
     path('user/', include('userModule.urls')),
     path('projects/', include('projectsModule.urls')),
@@ -105,7 +105,7 @@ urlpatterns = [
     # Mailing endpoints
     path('api/mail/', SendEmailHelpRequest.as_view(), name='send_email_help_request'),
     path('api/mail/event/', SendEmailEvent.as_view(), name='send_email_event'),
-    # Apis endpoints
+    # General Apis endpoints
     path('api/', include('Apis.urls')),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
