@@ -20,7 +20,7 @@ from django.views.generic import TemplateView
 from django.conf.urls.static import static
 from django.conf import settings
 from .mailServer import send_notification
-from userAuth.views import GoogleLoginView, GoogleSignupView
+from userAuth.views import GoogleLoginView, GoogleSignupView, WhoAmI
 from Mailing.views import SendEmailHelpRequest, SendEmailEvent
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -96,6 +96,7 @@ def auth0_health(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('debug/', debug_view, name='debug'),
+    path('auth0/whoami/', WhoAmI.as_view(), name='whoami'),
     path('auth0/health/', auth0_health, name='auth0_health'),
     path('api-auth/', include('rest_framework.urls')),
     path('user/', include('userModule.urls')),
