@@ -29,23 +29,6 @@ from .permission import RequireScopes
 # Set up logging
 logger = logging.getLogger(__name__)
 
-class WhoAmI(APIView):
-    permission_classes = (permissions.AllowAny,)
-
-    def get(self, request, format=None):
-        # DRF authentication runs even with AllowAny; we can inspect claims
-        try:
-            auth_claims = request.auth if isinstance(request.auth, dict) else None
-            return Response({
-                'authenticated': bool(request.user and request.user.is_authenticated),
-                'username': getattr(request.user, 'username', None),
-                'user_id': getattr(request.user, 'id', None),
-                'claims': auth_claims,
-            })
-        except Exception as e:
-            logger.error(f"whoami error: {str(e)}")
-            return Response({'error': 'whoami failed'}, status=500)
-
 def validate_user_types(user_types):
     """Validate user types against available choices"""
     if not isinstance(user_types, list):
