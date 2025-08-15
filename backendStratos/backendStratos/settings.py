@@ -311,6 +311,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://stratosgaming.com',
     'https://www.stratosgaming.com',
     'https://development.stratosgaming.com',  # Add development subdomain
+    'https://stratos-api-stg.stratosgaming.com',
 ]
 
 # Add regex pattern to trust all stratosgaming.com subdomains
