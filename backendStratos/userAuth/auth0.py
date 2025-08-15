@@ -6,6 +6,7 @@ from jose import jwt
 from rest_framework.authentication import BaseAuthentication, get_authorization_header
 from rest_framework import exceptions
 import requests
+import logging
 
 JWKS_CACHE_SECONDS = 6 * 60 * 60  # 6h
 
@@ -61,7 +62,11 @@ class Auth0JWTAuthentication(BaseAuthentication):
 
     def authenticate(self, request) -> Optional[Tuple[User, dict]]:
         auth = get_authorization_header(request).split()
-        if not auth or auth[0].lower() != b"bearer":
+        if not auth:
+            logging.getLogger("django.security").debug("Missing Authorization header")
+            return None
+        if auth[0].lower() != b"bearer":
+            logging.getLogger("django.security").debug("Authorization header present but not Bearer")
             return None
 
         token = auth[1].decode("utf-8")
@@ -77,7 +82,11 @@ class Auth0JWTAuthentication(BaseAuthentication):
         if not issuer:
             raise exceptions.AuthenticationFailed("Issuer not configured")
 
-        jwks, issuer = _get_jwks(issuer)
+        try:
+            jwks, issuer = _get_jwks(issuer)
+        except Exception as exc:
+            logging.getLogger("django.security").error(f"JWKS fetch failed: {exc}", extra={"issuer": issuer})
+            raise exceptions.AuthenticationFailed("Unable to fetch JWKS")
 
         def select_key(keys):
             return next(
@@ -106,6 +115,7 @@ class Auth0JWTAuthentication(BaseAuthentication):
                 issuer=issuer,
             )
         except Exception as exc:
+            logging.getLogger("django.security").error(f"Auth0 decode error: {exc}", extra={"issuer": issuer})
             raise exceptions.AuthenticationFailed(f"Token verification failed: {exc}")
 
         # Audience check (support list or string in token; allow multiple settings via comma)
@@ -114,9 +124,15 @@ class Auth0JWTAuthentication(BaseAuthentication):
         if accepted:
             if isinstance(token_aud, str):
                 if token_aud not in accepted:
+                    logging.getLogger("django.security").warning(
+                        f"Invalid audience: token_aud={token_aud} accepted={accepted}"
+                    )
                     raise exceptions.AuthenticationFailed("Invalid audience")
             elif isinstance(token_aud, (list, tuple)):
                 if not set(accepted).intersection(token_aud):
+                    logging.getLogger("django.security").warning(
+                        f"Invalid audience: token_aud={token_aud} accepted={accepted}"
+                    )
                     raise exceptions.AuthenticationFailed("Invalid audience")
             else:
                 raise exceptions.AuthenticationFailed("Audience missing")
@@ -141,18 +157,6 @@ class Auth0JWTAuthentication(BaseAuthentication):
         given          = c("given_name", "given_name") or ""
         family         = c("family_name", "family_name") or ""
         picture        = c("picture", "picture") or ""
-        try:
-            payload = jwt.decode(
-				token,
-				rsa_key,
-				algorithms=getattr(settings, "AUTH0_ALGORITHMS", ["RS256"]),
-				options={"verify_aud": False},
-				issuer=issuer,
-			)
-        except Exception as exc:
-            import logging
-            logging.getLogger("django.security").error(f"Auth0 decode error: {exc}", extra={"issuer": issuer})
-            raise exceptions.AuthenticationFailed(f"Token verification failed: {exc}")
         # JIT create/update Django user
         user, created = User.objects.get_or_create(
             username=sub,
