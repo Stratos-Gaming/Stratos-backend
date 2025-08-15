@@ -26,6 +26,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 import logging
+import time
+import requests
 
 logger = logging.getLogger('corsheaders')  # Changed to corsheaders logger
 
@@ -65,9 +67,36 @@ def debug_view(request):
     
     return response
 
+@csrf_exempt
+@require_http_methods(["GET"]) 
+def auth0_health(request):
+    issuer = getattr(settings, "AUTH0_ISSUER", "")
+    started = time.time()
+    try:
+        resp = requests.get(f"{issuer}.well-known/jwks.json", timeout=5)
+        elapsed_ms = int((time.time() - started) * 1000)
+        return JsonResponse({
+            "ok": resp.ok,
+            "status": resp.status_code,
+            "reason": resp.reason,
+            "elapsed_ms": elapsed_ms,
+            "issuer": issuer,
+        }, status=200 if resp.ok else 502)
+    except Exception as exc:
+        elapsed_ms = int((time.time() - started) * 1000)
+        logger = logging.getLogger('django.security')
+        logger.error(f"Auth0 health check failed: {exc}")
+        return JsonResponse({
+            "ok": False,
+            "error": str(exc),
+            "elapsed_ms": elapsed_ms,
+            "issuer": issuer,
+        }, status=503)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('debug/', debug_view, name='debug'),
+    path('auth0/health/', auth0_health, name='auth0_health'),
     path('api-auth/', include('rest_framework.urls')),
     path('user/', include('userModule.urls')),
     path('projects/', include('projectsModule.urls')),
