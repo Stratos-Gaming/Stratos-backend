@@ -95,7 +95,7 @@ SECRET_KEY = 'django-insecure-%5le_@gd7irhbox$kb$-ctek$)$^t2+d98_v&k)xe0sotpai&0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'  # Environment-aware DEBUG setting
 
-ALLOWED_HOSTS = ['3.74.166.136', 'localhost', '127.0.0.1', '0.0.0.0', 'dev.d2lv8dn21inij8.amplifyapp.com', 'api.stratosgaming.com','stratos-api-stg.stratosgaming.com']
+ALLOWED_HOSTS = ['35.156.29.253', 'localhost', '127.0.0.1', '0.0.0.0', 'dev.d2lv8dn21inij8.amplifyapp.com', 'api.stratosgaming.com','stratos-api-stg.stratosgaming.com', ]
 
 
 # Application definition
